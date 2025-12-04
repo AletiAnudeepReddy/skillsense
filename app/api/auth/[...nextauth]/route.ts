@@ -1,7 +1,6 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import { compare } from 'bcryptjs';
 import { connectDB } from '@/lib/db';
 import User from '@/models/User';
 
@@ -27,13 +26,12 @@ export const authOptions: NextAuthOptions = {
             throw new Error('No user found with this email');
           }
 
-          // Assuming password is hashed in DB
-          // In production, you'd use bcrypt.compare(credentials.password, user.password)
-          // For now, we'll do a simple comparison
-          const isPasswordValid = credentials.password === user.password || true;
+          // Validate password (for Week 1, simple comparison)
+          // In production, use: bcrypt.compare(credentials.password, user.password)
+          const isPasswordValid = user.password && credentials.password === user.password;
 
           if (!isPasswordValid) {
-            throw new Error('Invalid password');
+            throw new Error('Invalid email or password');
           }
 
           return {
@@ -91,7 +89,8 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
-        token.name = user.name;
+        token.name = user.name || null;
+        token.email = user.email || '';
         token.authProvider = user.authProvider || 'credentials';
       }
 
@@ -104,9 +103,10 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.name = token.name as string;
-        (session.user as any).authProvider = token.authProvider as string;
+        session.user.id = (token.id as string) || '';
+        session.user.name = token.name;
+        session.user.email = (token.email as string) || '';
+        (session.user as any).authProvider = token.authProvider || 'credentials';
       }
       return session;
     },
