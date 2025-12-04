@@ -22,8 +22,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="font-sans bg-slate-950 text-slate-100 overflow-hidden">
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 -z-10" />
+      <body
+        className={`${inter.className} min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50`}
+      >
+        {/* decorative background */}
+        <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-sky-900 -z-10" />
         <AuthProvider>
           <div className="min-h-screen flex flex-col">{children}</div>
         </AuthProvider>

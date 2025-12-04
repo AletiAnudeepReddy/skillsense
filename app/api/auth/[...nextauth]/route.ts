@@ -3,8 +3,9 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { connectDB } from '@/lib/db';
 import User from '@/models/User';
+import bcryptjs from 'bcryptjs';
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -26,9 +27,8 @@ export const authOptions: NextAuthOptions = {
             throw new Error('No user found with this email');
           }
 
-          // Validate password (for Week 1, simple comparison)
-          // In production, use: bcrypt.compare(credentials.password, user.password)
-          const isPasswordValid = user.password && credentials.password === user.password;
+          // Validate password using bcryptjs
+          const isPasswordValid = user.password && await bcryptjs.compare(credentials.password, user.password);
 
           if (!isPasswordValid) {
             throw new Error('Invalid email or password');
@@ -86,16 +86,12 @@ export const authOptions: NextAuthOptions = {
       }
     },
 
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.name = user.name || null;
         token.email = user.email || '';
-        token.authProvider = user.authProvider || 'credentials';
-      }
-
-      if (account?.provider === 'google') {
-        token.authProvider = 'google';
+        token.authProvider = (user as any).authProvider || 'credentials';
       }
 
       return token;
@@ -113,8 +109,8 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: '/auth/signin',
-    signOut: '/auth/signout',
+    signIn: '/login',
+    error: '/login',
   },
 
   session: {
