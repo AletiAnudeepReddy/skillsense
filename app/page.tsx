@@ -12,12 +12,12 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50">
       {/* Fixed Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-slate-700/40 bg-slate-900/40 backdrop-blur-md">
+      <nav className="sticky top-0 z-40 border-b border-slate-800 bg-gradient-to-r from-slate-950/80 via-indigo-950/60 to-slate-950/80 backdrop-blur-xl shadow-sm">
         <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
           {/* Logo */}
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
+              <span className="text-white font-bold text-md">S</span>
             </div>
             <h1 className="text-xl font-bold text-slate-100">SkillSense AI</h1>
             <span className="ml-2 text-xs font-semibold bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
@@ -29,7 +29,7 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <Link
               href="/login"
-              className="px-5 py-2 text-sm font-medium text-slate-300 hover:text-slate-100 transition-colors"
+              className="px-5 py-2 text-sm font-medium border border-slate-700 rounded-xl text-slate-300 hover:text-slate-100 transition-colors"
             >
               Log in
             </Link>
@@ -83,66 +83,129 @@ export default function Home() {
             </div>
 
             {/* Right: Dashboard Preview Card */}
+            {/* Right: Dashboard Preview Card */}
             <div className="hidden lg:block">
-              <div className="bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-700/60 p-8 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                {/* Header */}
-                <div className="mb-8">
-                  <div className="inline-block px-4 py-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-full mb-4">
-                    <span className="text-sm font-semibold text-green-400">
-                      Match Score
-                    </span>
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-bold text-white">78%</span>
-                    <span className="text-lg text-slate-400">match</span>
-                  </div>
-                </div>
+              <div className="relative">
+                {/* Glowing background blob */}
+                <div className="pointer-events-none absolute -inset-10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.35),_transparent_60%),_radial-gradient(circle_at_bottom,_rgba(45,212,191,0.35),_transparent_60%)] opacity-80 blur-3xl" />
 
-                {/* Progress Bar */}
-                <div className="mb-8">
-                  <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-green-500 to-emerald-500"
-                      style={{ width: "78%" }}
-                    />
-                  </div>
-                </div>
-
-                {/* Skills */}
-                <div className="space-y-6">
-                  {/* Strong Skills */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-slate-300 mb-3">
-                      Strong Skills
-                    </h3>
-                    <div className="space-y-2">
-                      {["React", "TypeScript", "Node.js"].map((skill) => (
-                        <div
-                          key={skill}
-                          className="flex items-center gap-2 text-sm text-slate-400"
-                        >
-                          <Check className="w-4 h-4 text-green-500" />
-                          {skill}
+                {/* Gradient border wrapper */}
+                <div className="relative rounded-3xl bg-gradient-to-br from-emerald-500/70 via-cyan-500/60 to-indigo-500/70 p-[1px] shadow-[0_0_60px_rgba(34,197,94,0.35)]">
+                  <div className="bg-slate-950/90 backdrop-blur-2xl rounded-3xl border border-slate-800/70 p-8 shadow-2xl transform hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(15,23,42,0.9)] transition-all duration-300">
+                    {/* Header */}
+                    <div className="mb-8 flex items-center justify-between gap-4">
+                      <div>
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-900/80 border border-emerald-400/40 rounded-full">
+                          <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">
+                            Match score insight
+                          </span>
                         </div>
-                      ))}
+                        <div className="mt-4 flex items-baseline gap-2">
+                          <span className="text-5xl font-semibold tracking-tight text-slate-50">
+                            78%
+                          </span>
+                          <span className="text-sm font-medium text-emerald-300/90 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-400/40">
+                            Strong fit
+                          </span>
+                        </div>
+                        <p className="mt-2 text-xs text-slate-400">
+                          Compared to a modern full-stack developer job
+                          description.
+                        </p>
+                      </div>
+
+                      {/* Small radial indicator */}
+                      <div className="hidden md:flex h-20 w-20 items-center justify-center rounded-full bg-slate-900/80 border border-slate-700/70 shadow-inner">
+                        <div className="h-16 w-16 rounded-full bg-gradient-to-br from-emerald-400 via-cyan-400 to-indigo-400 flex items-center justify-center text-xs font-semibold text-slate-950">
+                          Live
+                          <br />
+                          Overview
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Missing Skills */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-slate-300 mb-3">
-                      Skills to Learn
-                    </h3>
-                    <div className="space-y-2">
-                      {["Python", "AWS", "Docker"].map((skill) => (
+                    {/* Progress + mini stats */}
+                    <div className="mb-8 space-y-3">
+                      <div className="h-2.5 rounded-full bg-slate-800 overflow-hidden">
                         <div
-                          key={skill}
-                          className="flex items-center gap-2 text-sm text-slate-400"
-                        >
-                          <div className="w-4 h-4 border border-slate-600 rounded-full" />
-                          {skill}
+                          className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400"
+                          style={{ width: "78%" }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-slate-400">
+                        <span>Skill match</span>
+                        <div className="flex gap-3">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/80 px-2 py-1 border border-slate-700/70">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                            12 matched skills
+                          </span>
+                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/80 px-2 py-1 border border-slate-700/70">
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                            3 gaps to close
+                          </span>
                         </div>
-                      ))}
+                      </div>
+                    </div>
+
+                    {/* Skills */}
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      {/* Strong Skills */}
+                      <div>
+                        <h3 className="text-xs font-semibold tracking-[0.16em] uppercase text-slate-400 mb-3">
+                          Strong skills
+                        </h3>
+                        <div className="space-y-2">
+                          {["React", "TypeScript", "Node.js"].map((skill) => (
+                            <div
+                              key={skill}
+                              className="flex items-center justify-between rounded-xl bg-slate-900/80 border border-emerald-400/25 px-3 py-2 text-xs text-slate-200 shadow-sm"
+                            >
+                              <div className="flex items-center gap-2">
+                                <Check className="w-4 h-4 text-emerald-400" />
+                                <span>{skill}</span>
+                              </div>
+                              <span className="text-[10px] uppercase tracking-wide text-emerald-300/90">
+                                hiring trend +
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Skills to Learn */}
+                      <div>
+                        <h3 className="text-xs font-semibold tracking-[0.16em] uppercase text-slate-400 mb-3">
+                          Skills to learn next
+                        </h3>
+                        <div className="space-y-2">
+                          {["Python", "AWS", "Docker"].map((skill) => (
+                            <div
+                              key={skill}
+                              className="flex items-center justify-between rounded-xl bg-slate-900/70 border border-slate-700/80 px-3 py-2 text-xs text-slate-200"
+                            >
+                              <div className="flex items-center gap-2">
+                                <div className="relative flex h-4 w-4 items-center justify-center">
+                                  <div className="h-4 w-4 rounded-full border border-slate-600" />
+                                  <div className="absolute h-2 w-2 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 opacity-0 group-hover:opacity-100 transition" />
+                                </div>
+                                <span>{skill}</span>
+                              </div>
+                              <span className="text-[10px] uppercase tracking-wide text-amber-300/90">
+                                high impact
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Footer note */}
+                    <div className="mt-6 flex items-center justify-between text-[11px] text-slate-400">
+                      <span>Powered by SkillSense AI</span>
+                      <span className="text-cyan-300/90">
+                        + Generate a learning plan in 1 click →
+                      </span>
                     </div>
                   </div>
                 </div>

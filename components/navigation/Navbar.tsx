@@ -38,7 +38,7 @@ export default function Navbar() {
   const user = session?.user;
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/60 backdrop-blur-xl">
+    <nav className="sticky top-0 z-40 border-b border-slate-800 bg-gradient-to-r from-slate-950/80 via-indigo-950/60 to-slate-950/80 backdrop-blur-xl shadow-sm">
       {/* Top loading bar */}
       <div className="relative">
         {isLoading && (
@@ -52,7 +52,7 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center shadow-md">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center shadow-xl ring-1 ring-cyan-400/20 transform hover:scale-105 transition">
                 <span className="text-white font-bold">S</span>
               </div>
               <div className="flex flex-col leading-tight">
@@ -94,13 +94,13 @@ export default function Navbar() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => handlePush("/login")}
-                    className="px-3 py-1.5 text-sm rounded-md text-slate-200 hover:text-white hover:bg-slate-900/40"
+                    className="px-3 py-1.5 text-sm rounded-md text-slate-200 hover:text-white hover:bg-slate-900/40 border border-slate-600/40 transition"
                   >
                     Log in
                   </button>
                   <button
                     onClick={() => handlePush("/register")}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-medium shadow-lg hover:opacity-95"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-medium shadow-xl hover:scale-[0.99] transform transition"
                   >
                     Get started
                   </button>
