@@ -38,7 +38,7 @@ export default function Navbar() {
   const user = session?.user;
 
   return (
-    <nav className="sticky top-0 z-50 border-b py-1 border-slate-800 bg-slate-950/60 backdrop-blur-xl shadow-sm">
+    <nav className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/60 backdrop-blur-xl shadow-sm">
       {/* Top loading bar */}
       <div className="relative">
         {isLoading && (
@@ -111,12 +111,6 @@ export default function Navbar() {
             {/* Authenticated */}
             {user && (
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => handlePush("/resume/upload")}
-                  className="hidden sm:inline-flex items-center px-4 py-2 rounded-full bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-medium transition"
-                >
-                  Add Resume
-                </button>
 
                 <div className="relative">
                   <button

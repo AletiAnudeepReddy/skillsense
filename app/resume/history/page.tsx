@@ -29,7 +29,7 @@ export default function ResumeHistoryPage() {
   // TODO: replace mock data with fetch to GET /api/resume/history
 
   return (
-    <div className="min-h-[60vh] py-10 px-6 bg-slate-950 text-slate-50">
+    <div className="min-h-[60vh] p-6 text-slate-50">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Resume history</h1>

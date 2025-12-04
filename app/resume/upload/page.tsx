@@ -73,7 +73,7 @@ export default function UploadResumePage() {
   };
 
   return (
-    <div className="min-h-[70vh] py-10 px-6 bg-slate-950 text-slate-50">
+    <div className="min-h-[70vh] p-6 text-slate-50">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Upload your resume</h1>
@@ -86,7 +86,7 @@ export default function UploadResumePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left: upload controls */}
           <div className="space-y-6">
-            <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-sm">
+            <div className="rounded-2xl bg-slate-900/60 border-2 border-dashed border-slate-700 p-6 shadow-sm">
               <h3 className="text-lg font-semibold mb-3">Upload PDF</h3>
               <p className="text-sm text-slate-400 mb-4">
                 We currently accept PDFs. Upload your resume to parse skills and

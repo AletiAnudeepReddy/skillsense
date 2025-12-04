@@ -25,7 +25,12 @@ const navigationItems: Array<any> = [
       { label: "History", href: "/resume/history" },
     ],
   },
-  { label: "Jobs", href: "/jobs", icon: Briefcase },
+  {
+    label: "Jobs",
+    href: "/jobs",
+    icon: Briefcase,
+    children: [{ label: "Target Job", href: "/jobs/target" }],
+  },
   { label: "Analysis", href: "/analysis", icon: Activity },
   {
     label: "Learning Plan",
@@ -67,14 +72,16 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-18 w-64 h-[calc(100vh-4rem)] bg-slate-900/40 backdrop-blur-md border-r border-slate-700/40 transition-transform duration-300 z-40 flex flex-col overflow-hidden ${
+        className={`fixed left-0 top-18 w-64 h-[calc(100vh-4rem)] bg-slate-950/60 backdrop-blur-md border-r border-slate-700/40 transition-transform duration-300 z-40 flex flex-col overflow-hidden ${
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
         <nav className="flex-1 p-4 space-y-2 overflow-auto">
           {navigationItems.map((item) => {
             const Icon = item.icon;
-            const active = isActive(item.href) || (item.children || []).some((c: any) => pathname === c.href);
+            const active =
+              isActive(item.href) ||
+              (item.children || []).some((c: any) => pathname === c.href);
 
             // If item has children render expandable section
             if (item.children) {
@@ -82,7 +89,12 @@ export default function Sidebar() {
               return (
                 <div key={item.label}>
                   <button
-                    onClick={() => setOpenParents((s) => ({ ...s, [item.label]: !s[item.label] }))}
+                    onClick={() =>
+                      setOpenParents((s) => ({
+                        ...s,
+                        [item.label]: !s[item.label],
+                      }))
+                    }
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
                       item.disabled
                         ? "text-slate-500 cursor-not-allowed opacity-50"
@@ -93,9 +105,17 @@ export default function Sidebar() {
                     aria-expanded={isParentOpen}
                     aria-disabled={item.disabled}
                   >
-                    {Icon ? <Icon className="w-5 h-5 flex-shrink-0" /> : <span className="w-5" />}
+                    {Icon ? (
+                      <Icon className="w-5 h-5 flex-shrink-0" />
+                    ) : (
+                      <span className="w-5" />
+                    )}
                     <span className="flex-1 text-left">{item.label}</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isParentOpen ? "rotate-180" : ""}`} />
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform ${
+                        isParentOpen ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
 
                   {isParentOpen && (
