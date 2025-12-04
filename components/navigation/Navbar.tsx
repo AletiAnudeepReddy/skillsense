@@ -38,7 +38,7 @@ export default function Navbar() {
   const user = session?.user;
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-slate-800 bg-gradient-to-r from-slate-950/80 via-indigo-950/60 to-slate-950/80 backdrop-blur-xl shadow-sm">
+    <nav className="sticky top-0 z-50 border-b py-1 border-slate-800 bg-slate-950/60 backdrop-blur-xl shadow-sm">
       {/* Top loading bar */}
       <div className="relative">
         {isLoading && (
@@ -48,7 +48,7 @@ export default function Navbar() {
         )}
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-3">

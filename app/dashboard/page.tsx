@@ -70,8 +70,8 @@ export default function DashboardPage() {
   return (
     <MainLayout>
       {/* Welcome Section */}
-      <section className="mb-10">
-        <h1 className="text-4xl font-bold text-slate-100 mb-2">
+      <section className="mb-10 mt-5">
+        <h1 className="text-3xl font-bold text-slate-100 mb-2">
           Welcome back to SkillSense AI
         </h1>
         <p className="text-lg text-slate-400">

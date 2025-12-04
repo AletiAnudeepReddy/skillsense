@@ -57,11 +57,11 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-slate-900/40 backdrop-blur-md border-r border-slate-700/40 transition-transform duration-300 md:transition-none z-40 ${
+        className={`fixed left-0 top-18 w-64 h-[calc(100vh-4rem)] bg-slate-900/40 backdrop-blur-md border-r border-slate-700/40 transition-transform duration-300 z-40 flex flex-col overflow-hidden ${
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <nav className="p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-hidden">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -93,10 +93,10 @@ export default function Sidebar() {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700/40 bg-slate-900/60">
-          <p className="text-xs text-slate-400 text-center">
-            v0.1.0{" "}
-            <span className="bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent font-semibold">
+        <div className="p-4 border-t border-slate-700/40 bg-slate-900/60 flex items-center justify-center gap-2 flex-shrink-0">
+          <p className="text-xs text-slate-400 flex items-center gap-2">
+            <span className="font-mono text-xs text-slate-400">v0.1.0</span>
+            <span className="ml-1 bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent font-semibold">
               beta
             </span>
           </p>
