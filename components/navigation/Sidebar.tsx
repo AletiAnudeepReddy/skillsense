@@ -1,0 +1,107 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import {
+  LayoutDashboard,
+  FileText,
+  Briefcase,
+  Activity,
+  Settings,
+  Menu,
+  X,
+} from "lucide-react";
+import { useState } from "react";
+
+const navigationItems = [
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Resume", href: "/resume", icon: FileText },
+  { label: "Jobs", href: "/jobs", icon: Briefcase },
+  { label: "Analysis", href: "/analysis", icon: Activity },
+  {
+    label: "Learning Plan",
+    href: "/learning-plan",
+    icon: Activity,
+    disabled: true,
+  },
+  { label: "Settings", href: "/settings", icon: Settings },
+];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const isActive = (href: string) => pathname === href;
+
+  return (
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="md:hidden fixed top-20 left-4 z-40 p-2 hover:bg-slate-800/50 rounded-lg transition-colors"
+      >
+        {isOpen ? (
+          <X className="w-5 h-5 text-slate-300" />
+        ) : (
+          <Menu className="w-5 h-5 text-slate-300" />
+        )}
+      </button>
+
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-30 top-16"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed md:static left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-slate-900/40 backdrop-blur-md border-r border-slate-700/40 transition-transform duration-300 md:transition-none z-40 ${
+          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
+        <nav className="p-4 space-y-2">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
+                  item.disabled
+                    ? "text-slate-500 cursor-not-allowed opacity-50"
+                    : active
+                    ? "bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30"
+                    : "text-slate-300 hover:bg-slate-800/50 hover:text-slate-100"
+                }`}
+                aria-disabled={item.disabled}
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                <span>{item.label}</span>
+                {item.disabled && (
+                  <span className="ml-auto text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded">
+                    soon
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Sidebar Footer */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700/40 bg-slate-900/60">
+          <p className="text-xs text-slate-400 text-center">
+            v0.1.0{" "}
+            <span className="bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent font-semibold">
+              beta
+            </span>
+          </p>
+        </div>
+      </aside>
+    </>
+  );
+}
