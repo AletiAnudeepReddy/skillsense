@@ -7,6 +7,7 @@ import {
   ArrowRight,
   Check,
 } from "lucide-react";
+import { Briefcase, Users, Rocket } from "lucide-react";
 
 export default function Home() {
   return (
@@ -357,15 +358,38 @@ export default function Home() {
           <p className="text-lg text-slate-400 mb-8">
             Perfect for students, job seekers, and bootcamp grads
           </p>
-          <div className="flex justify-center gap-8 items-center">
-            {[...Array(4)].map((_, i) => (
-              <div
-                key={i}
-                className="w-16 h-16 bg-slate-800/40 border border-slate-700/40 rounded-lg animate-pulse"
-              />
-            ))}
+
+          <div className="flex justify-center gap-10 items-center">
+            {[
+              { icon: GraduationCap, label: "Students" },
+              { icon: Briefcase, label: "Job Seekers" },
+              { icon: Users, label: "Bootcamps" },
+              { icon: Rocket, label: "Career Changers" },
+            ].map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={index}
+                  data-aos="zoom-in"
+                  data-aos-delay={index * 120}
+                  className="group flex flex-col items-center"
+                >
+                  <div
+                    className="w-16 h-16 bg-slate-900/60 border border-slate-700/50 backdrop-blur-md rounded-xl flex items-center justify-center
+            transition-transform duration-300 group-hover:scale-110 shadow-[0_0_20px_rgba(56,189,248,0.15)]"
+                  >
+                    <Icon className="w-8 h-8 text-cyan-400 group-hover:text-indigo-400 transition-colors" />
+                  </div>
+
+                  <span className="mt-3 text-xs text-slate-400 uppercase tracking-wide opacity-70 group-hover:opacity-100 transition">
+                    {item.label}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-          <p className="text-sm text-slate-500 mt-6">
+
+          <p className="text-sm text-slate-500 mt-8">
             Trusted by learners worldwide
           </p>
         </div>
@@ -406,7 +430,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer
-        className="border-t border-slate-700/40 py-12 px-6"
+        className="border-t border-slate-700/40 py-10 px-6"
         data-aos="fade-up"
       >
         <div className="max-w-7xl mx-auto">
@@ -421,13 +445,22 @@ export default function Home() {
             </div>
 
             <div className="flex gap-6 text-sm text-slate-400">
-              <a href="#" className="hover:text-slate-200 transition-colors">
+              <a
+                href="/legal#privacy"
+                className="hover:text-slate-200 transition-colors"
+              >
                 Privacy
               </a>
-              <a href="#" className="hover:text-slate-200 transition-colors">
+              <a
+                href="/legal#terms"
+                className="hover:text-slate-200 transition-colors"
+              >
                 Terms
               </a>
-              <a href="#" className="hover:text-slate-200 transition-colors">
+              <a
+                href="/legal#contact"
+                className="hover:text-slate-200 transition-colors"
+              >
                 Contact
               </a>
             </div>
