@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { LoadingProvider } from "@/components/providers/LoadingProvider";
 import { AOSProvider } from "@/components/providers/AOSProvider";
+import { ToastProvider } from "@/components/providers/ToastProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -32,7 +33,9 @@ export default function RootLayout({
         <AOSProvider>
           <AuthProvider>
             <LoadingProvider>
-              <div className="min-h-screen flex flex-col">{children}</div>
+              <ToastProvider>
+                <div className="min-h-screen flex flex-col">{children}</div>
+              </ToastProvider>
             </LoadingProvider>
           </AuthProvider>
         </AOSProvider>

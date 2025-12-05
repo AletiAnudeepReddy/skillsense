@@ -99,7 +99,7 @@ export default function Sidebar() {
                       item.disabled
                         ? "text-slate-500 cursor-not-allowed opacity-50"
                         : active
-                        ? "bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30"
+                        ? "bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30 neon-glow"
                         : "text-slate-300 hover:bg-slate-800/50 hover:text-slate-100"
                     }`}
                     aria-expanded={isParentOpen}
@@ -149,7 +149,7 @@ export default function Sidebar() {
                   item.disabled
                     ? "text-slate-500 cursor-not-allowed opacity-50"
                     : active
-                    ? "bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30"
+                    ? "bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-500/30 neon-glow"
                     : "text-slate-300 hover:bg-slate-800/50 hover:text-slate-100"
                 }`}
                 aria-disabled={item.disabled}

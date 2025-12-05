@@ -55,7 +55,7 @@ export default function AnalysisListPage() {
   };
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-6">
       {/* Header */}
       <div className="mb-12" data-aos="fade-down">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-300 mb-3">
