@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import {
   UploadCloud,
@@ -9,37 +10,146 @@ import {
 } from "lucide-react";
 import { Briefcase, Users, Rocket } from "lucide-react";
 
+import { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
+import { ChevronDown } from "lucide-react";
+import { useLoading } from "@/components/providers/LoadingProvider";
+
 export default function Home() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { isLoading, startLoading, stopLoading } = useLoading();
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const user = session?.user;
+
+  useEffect(() => {
+    // stop loading after route change
+    stopLoading();
+    // close dropdown on route change
+    setIsDropdownOpen(false);
+  }, [pathname, stopLoading]);
+
+  const handlePush = (path: string) => {
+    startLoading();
+    router.push(path);
+  };
+
+  const handleLogout = async () => {
+    startLoading();
+    await signOut({ redirect: false });
+    router.push("/");
+    stopLoading();
+  };
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50">
       {/* Fixed Navbar */}
       <nav className="sticky top-0 z-40 border-b border-slate-800 bg-gradient-to-r from-slate-950/80 via-indigo-950/60 to-slate-950/80 backdrop-blur-xl shadow-sm">
+        {/* Top loading bar */}
+        <div className="relative">
+          {isLoading && (
+            <div className="absolute inset-x-0 top-0 h-[3px] z-50">
+              <div className="h-full w-full bg-gradient-to-r from-cyan-400 via-indigo-500 to-pink-500 animate-pulse" />
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-md">S</span>
-            </div>
-            <h1 className="text-xl font-bold text-slate-100">SkillSense AI</h1>
-            <span className="ml-2 text-xs font-semibold bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-              beta
-            </span>
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-md">S</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold text-slate-100">
+                  SkillSense AI
+                </h1>
+                <span className="text-xs font-semibold bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                  beta
+                </span>
+              </div>
+            </Link>
           </div>
 
-          {/* Right buttons */}
+          {/* Right side */}
           <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="px-5 py-2 text-sm font-medium border border-slate-700 rounded-xl text-slate-300 hover:text-slate-100 transition-colors"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/register"
-              className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-full hover:from-indigo-500 hover:to-indigo-400 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              Get started
-            </Link>
+            {/* When NOT logged in → keep original two buttons */}
+            {!user && (
+              <>
+                <Link
+                  href="/login"
+                  className="px-5 py-2 text-sm font-medium border border-slate-700 rounded-xl text-slate-300 hover:text-slate-100 hover:bg-slate-900/40 transition-colors"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/register"
+                  className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-full hover:from-indigo-500 hover:to-indigo-400 transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Get started
+                </Link>
+              </>
+            )}
+
+            {/* When LOGGED IN → show Add Resume + profile dropdown */}
+            {user && (
+              <div className="flex items-center gap-3">
+                {/* Add Resume button (left of profile) */}
+                <button
+                  onClick={() => handlePush("/resume/upload")}
+                  className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl bg-slate-900/70 border border-slate-700 text-slate-100 hover:bg-slate-800 hover:border-cyan-500/60 transition-colors"
+                >
+                  + Add Resume
+                </button>
+
+                {/* Profile dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsDropdownOpen((prev) => !prev)}
+                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-900/40 transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-sm font-semibold text-white">
+                      {user.name
+                        ? user.name.charAt(0).toUpperCase()
+                        : user.email?.charAt(0)?.toUpperCase() || "U"}
+                    </div>
+                    <div className="hidden sm:flex flex-col text-left">
+                      <span className="text-sm font-medium text-slate-100 truncate max-w-[140px]">
+                        {user.name ?? user.email}
+                      </span>
+                      <span className="text-xs text-slate-400 truncate max-w-[160px]">
+                        {user.email}
+                      </span>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-slate-300" />
+                  </button>
+
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-52 bg-slate-950/95 backdrop-blur-md border border-slate-800 rounded-xl shadow-xl z-50">
+                      <button
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          handlePush("/settings");
+                        }}
+                        className="w-full text-left px-4 py-2.5 text-sm text-slate-100 hover:bg-slate-900/70"
+                      >
+                        Profile & Settings
+                      </button>
+                      <div className="border-t border-slate-800" />
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2.5 text-sm text-rose-300 hover:bg-rose-950/40"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </nav>
@@ -430,7 +540,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer
-        className="border-t border-slate-700/40 py-10 px-6"
+        className="border-t border-slate-700/40 py-12 px-6"
         data-aos="fade-up"
       >
         <div className="max-w-7xl mx-auto">
