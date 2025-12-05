@@ -3,7 +3,7 @@ const ML_BASE_URL = process.env.ML_SERVICE_URL || "http://localhost:8000";
 /**
  * Generic helper to POST to ML service
  */
-async function postToML<T>(path: string, body: unknown): Promise<T> {
+export async function postToML<T>(path: string, body: unknown): Promise<T> {
   try {
     const res = await fetch(`${ML_BASE_URL}${path}`, {
       method: "POST",

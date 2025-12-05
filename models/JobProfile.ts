@@ -91,8 +91,8 @@ jobProfileSchema.index({ userId: 1, createdAt: -1 });
  * Create or retrieve JobProfile model
  * Prevents duplicate model compilation in Next.js hot reload
  */
-const JobProfile: Model<IJobProfile> =
-  mongoose.models.JobProfile ||
+const JobProfile = (mongoose.models.JobProfile as Model<IJobProfile>) ||
   mongoose.model<IJobProfile>('JobProfile', jobProfileSchema);
 
+export { JobProfile };
 export default JobProfile;

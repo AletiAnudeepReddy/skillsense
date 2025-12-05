@@ -94,7 +94,7 @@ resumeSchema.index({ userId: 1, createdAt: -1 });
  * Create or retrieve Resume model
  * Prevents duplicate model compilation in Next.js hot reload
  */
-const Resume: Model<IResume> =
-  mongoose.models.Resume || mongoose.model<IResume>('Resume', resumeSchema);
+const Resume = (mongoose.models.Resume as Model<IResume>) || mongoose.model<IResume>('Resume', resumeSchema);
 
+export { Resume };
 export default Resume;
