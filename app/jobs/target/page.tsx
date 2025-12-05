@@ -62,7 +62,7 @@ export default function TargetJobPage() {
   return (
     <div className="min-h-[70vh] p-6 text-slate-50">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
+        <div className="mb-8" data-aos="fade-up">
           <h1 className="text-3xl font-bold">Choose your target job</h1>
           <p className="text-slate-400 mt-2">
             Paste a job description or link to see how your skills compare.
@@ -71,9 +71,14 @@ export default function TargetJobPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <Card className="bg-slate-900/60 border-2 border-dashed border-slate-700">
+            <Card
+              className="bg-slate-900/60 border-2 rounded-2xl shadow-sm border-dashed border-slate-700"
+              data-aos="fade-right"
+            >
               <div className="p-6">
-                <h3 className="text-lg text-slate-300  font-semibold mb-3">Job description</h3>
+                <h3 className="text-lg text-slate-300  font-semibold mb-3">
+                  Job description
+                </h3>
                 <p className="text-sm text-slate-400 mb-4">
                   Paste either the full JD text or a job posting link.
                 </p>
@@ -96,7 +101,11 @@ export default function TargetJobPage() {
                       onChange={(e) => setJdUrl(e.target.value)}
                       className="bg-slate-800/60 text-slate-50 border-slate-700"
                     />
-                    <Button className="text-slate-300" onClick={() => setJdUrl("")} variant="ghost">
+                    <Button
+                      className="text-slate-300"
+                      onClick={() => setJdUrl("")}
+                      variant="ghost"
+                    >
                       Clear
                     </Button>
                   </div>
@@ -117,9 +126,15 @@ export default function TargetJobPage() {
               </div>
             </Card>
 
-            <Card className="bg-slate-900/60 border-slate-800">
+            <Card
+              className="bg-slate-900/60 border-slate-800"
+              data-aos="fade-right"
+              data-aos-delay="100"
+            >
               <div className="p-6">
-                <h4 className="text-sm font-semibold mb-2">Tips</h4>
+                <h4 className="text-sm text-slate-400 font-semibold mb-2">
+                  Tips
+                </h4>
                 <ul className="text-sm text-slate-400 space-y-2">
                   <li>Paste the full job description for best results.</li>
                   <li>
@@ -133,7 +148,7 @@ export default function TargetJobPage() {
             </Card>
           </div>
 
-          <div>
+          <div data-aos="fade-left">
             <Card className="bg-slate-900/60 border-slate-800 p-6 min-h-[340px]">
               {!parsedJob && !isParsing ? (
                 <div className="flex flex-col items-center justify-center gap-4 py-12">
@@ -159,7 +174,7 @@ export default function TargetJobPage() {
                   <div className="h-3 bg-slate-800 rounded w-5/6 animate-pulse" />
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4" data-aos="zoom-in">
                   <div>
                     <h4 className="text-sm text-slate-400">Title</h4>
                     <div className="text-lg font-semibold text-slate-100">

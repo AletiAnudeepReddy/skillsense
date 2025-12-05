@@ -48,16 +48,24 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
-            <div className="space-y-8">
+            <div className="space-y-8" data-aos="fade-up">
               <div className="space-y-6">
-                <h2 className="text-5xl lg:text-6xl font-bold leading-tight text-white">
+                <h2
+                  className="text-5xl lg:text-6xl font-bold leading-tight text-white"
+                  data-aos="fade-down"
+                  data-aos-delay="100"
+                >
                   See your skill gap for any job in
                   <span className="bg-gradient-to-r from-cyan-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
                     {" "}
                     seconds.
                   </span>
                 </h2>
-                <p className="text-lg text-slate-400 leading-relaxed">
+                <p
+                  className="text-lg text-slate-400 leading-relaxed"
+                  data-aos="fade-up"
+                  data-aos-delay="200"
+                >
                   Upload your resume, paste a job description, and let
                   SkillSense AI show your strengths, gaps, and a personalized
                   learning roadmap.
@@ -65,7 +73,11 @@ export default function Home() {
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div
+                className="flex flex-col sm:flex-row gap-4 pt-4"
+                data-aos="zoom-in"
+                data-aos-delay="300"
+              >
                 <Link
                   href="/register"
                   className="inline-flex items-center justify-center px-8 py-3 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-full hover:from-indigo-500 hover:to-indigo-400 transition-all duration-200 shadow-lg hover:shadow-2xl transform hover:scale-105"
@@ -84,7 +96,11 @@ export default function Home() {
 
             {/* Right: Dashboard Preview Card */}
             {/* Right: Dashboard Preview Card */}
-            <div className="hidden lg:block">
+            <div
+              className="hidden lg:block"
+              data-aos="fade-left"
+              data-aos-delay="200"
+            >
               <div className="relative">
                 {/* Glowing background blob */}
                 <div className="pointer-events-none absolute -inset-10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.35),_transparent_60%),_radial-gradient(circle_at_bottom,_rgba(45,212,191,0.35),_transparent_60%)] opacity-80 blur-3xl" />
@@ -218,7 +234,7 @@ export default function Home() {
       {/* Features Section */}
       <section className="py-20 px-6 border-t border-slate-700/40">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16" data-aos="fade-up">
             <h3 className="text-4xl font-bold text-white mb-4">
               Powerful features to accelerate your job search
             </h3>
@@ -255,6 +271,8 @@ export default function Home() {
                 <div
                   key={index}
                   className="group bg-slate-900/40 backdrop-blur-sm border border-slate-700/40 rounded-2xl p-8 hover:border-slate-600/60 hover:bg-slate-900/60 transition-all duration-300 transform hover:scale-105"
+                  data-aos="zoom-in"
+                  data-aos-delay={`${index * 100}`}
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-6 group-hover:from-indigo-500/30 group-hover:to-cyan-500/30 transition-colors">
                     <Icon className="w-6 h-6 text-indigo-400" />
@@ -275,7 +293,7 @@ export default function Home() {
       {/* How It Works Section */}
       <section className="py-20 px-6 border-t border-slate-700/40">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16" data-aos="fade-up">
             <h3 className="text-4xl font-bold text-white mb-4">
               Three simple steps to success
             </h3>
@@ -312,7 +330,11 @@ export default function Home() {
                 )}
 
                 {/* Card */}
-                <div className="relative z-10 bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-700/60 p-8">
+                <div
+                  className="relative z-10 bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-700/60 p-8"
+                  data-aos="flip-up"
+                  data-aos-delay={`${index * 150}`}
+                >
                   {/* Step number */}
                   <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-indigo-500 rounded-full flex items-center justify-center mb-6 text-white font-bold text-lg">
                     {item.step}
@@ -331,7 +353,7 @@ export default function Home() {
 
       {/* Social Proof Section */}
       <section className="py-16 px-6 border-t border-slate-700/40">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center" data-aos="fade-up">
           <p className="text-lg text-slate-400 mb-8">
             Perfect for students, job seekers, and bootcamp grads
           </p>
@@ -352,13 +374,13 @@ export default function Home() {
       {/* Final CTA Section */}
       <section className="py-20 px-6 border-t border-slate-700/40">
         <div className="max-w-4xl mx-auto">
-          <div className="relative group">
+          <div className="relative group" data-aos="zoom-in">
             {/* Gradient border effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/50 via-cyan-600/50 to-indigo-600/50 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300 opacity-50 group-hover:opacity-75" />
 
             {/* Card */}
             <div className="relative bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-700/60 p-12 text-center space-y-8">
-              <div>
+              <div data-aos="fade-up" data-aos-delay="100">
                 <h3 className="text-4xl font-bold text-white mb-4">
                   Ready to see your skill gap?
                 </h3>
@@ -371,6 +393,8 @@ export default function Home() {
               <Link
                 href="/register"
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-full hover:from-indigo-500 hover:to-indigo-400 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"
+                data-aos="pulse"
+                data-aos-delay="200"
               >
                 Get started for free
                 <ArrowRight className="ml-3 w-6 h-6" />
@@ -381,7 +405,10 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-700/40 py-12 px-6">
+      <footer
+        className="border-t border-slate-700/40 py-12 px-6"
+        data-aos="fade-up"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">

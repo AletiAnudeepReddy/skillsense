@@ -70,7 +70,7 @@ export default function DashboardPage() {
   return (
     <MainLayout>
       {/* Welcome Section */}
-      <section className="mb-10 mt-5">
+      <section className="mb-10 mt-5" data-aos="fade-up">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">
           Welcome back to SkillSense AI
         </h1>
@@ -85,6 +85,8 @@ export default function DashboardPage() {
           <div
             key={index}
             className="bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-700/60 p-6 shadow-lg hover:shadow-xl hover:border-slate-600/80 transition-all"
+            data-aos="zoom-in"
+            data-aos-delay={`${index * 100}`}
           >
             <div className="flex items-start justify-between mb-4">
               <div>{card.icon}</div>
@@ -108,16 +110,18 @@ export default function DashboardPage() {
       {/* Recent Analyses and Chart Placeholder */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Analyses */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2" data-aos="fade-up">
           <div className="bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-700/60 p-6 shadow-lg">
             <h2 className="text-lg font-bold text-slate-100 mb-4">
               Recent Analyses
             </h2>
             <div className="space-y-3">
-              {recentAnalyses.map((analysis) => (
+              {recentAnalyses.map((analysis, idx) => (
                 <div
                   key={analysis.id}
                   className="flex items-center justify-between p-4 border border-slate-700/40 rounded-xl hover:bg-slate-800/50 hover:border-slate-600/60 transition-all cursor-pointer"
+                  data-aos="slide-up"
+                  data-aos-delay={`${idx * 100}`}
                 >
                   <div className="flex-1">
                     <h3 className="font-medium text-slate-100">
@@ -154,7 +158,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Match Score Chart Placeholder */}
-        <div className="bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-700/60 p-6 shadow-lg">
+        <div
+          className="bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-700/60 p-6 shadow-lg"
+          data-aos="fade-left"
+        >
           <h2 className="text-lg font-bold text-slate-100 mb-4">
             Match Score Over Time
           </h2>

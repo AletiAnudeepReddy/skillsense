@@ -116,10 +116,17 @@ export default function RegisterPage() {
       />
 
       {/* Card */}
-      <Card className="relative w-full max-w-md bg-slate-950/70 backdrop-blur-xl border border-slate-800/60 shadow-2xl">
+      <Card
+        className="relative w-full max-w-md bg-slate-950/70 backdrop-blur-xl border border-slate-800/60 shadow-2xl"
+        data-aos="zoom-in"
+      >
         <div className="p-8 space-y-6">
           {/* Header */}
-          <div className="text-center space-y-2">
+          <div
+            className="text-center space-y-2"
+            data-aos="fade-down"
+            data-aos-delay="100"
+          >
             <div className="flex justify-center mb-4">
               <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">S</span>
@@ -133,7 +140,10 @@ export default function RegisterPage() {
 
           {/* Success Message */}
           {success && (
-            <div className="p-4 bg-green-500/10 border border-green-500/50 rounded-lg space-y-2">
+            <div
+              className="p-4 bg-green-500/10 border border-green-500/50 rounded-lg space-y-2"
+              data-aos="fade-in"
+            >
               <div className="flex items-center gap-2">
                 <Check className="w-5 h-5 text-green-400" />
                 <span className="text-sm font-medium text-green-300">

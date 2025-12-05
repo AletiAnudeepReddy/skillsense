@@ -75,7 +75,7 @@ export default function UploadResumePage() {
   return (
     <div className="min-h-[70vh] p-6 text-slate-50">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
+        <div className="mb-8" data-aos="fade-up">
           <h1 className="text-3xl font-bold">Upload your resume</h1>
           <p className="text-slate-400 mt-2">
             Upload a PDF or paste your LinkedIn URL to let SkillMatch AI parse
@@ -86,7 +86,10 @@ export default function UploadResumePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left: upload controls */}
           <div className="space-y-6">
-            <div className="rounded-2xl bg-slate-900/60 border-2 border-dashed border-slate-700 p-6 shadow-sm">
+            <div
+              className="rounded-2xl bg-slate-900/60 border-2 border-dashed border-slate-700 p-6 shadow-sm"
+              data-aos="fade-right"
+            >
               <h3 className="text-lg font-semibold mb-3">Upload PDF</h3>
               <p className="text-sm text-slate-400 mb-4">
                 We currently accept PDFs. Upload your resume to parse skills and
@@ -146,7 +149,11 @@ export default function UploadResumePage() {
               )}
             </div>
 
-            <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-sm">
+            <div
+              className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-sm"
+              data-aos="fade-right"
+              data-aos-delay="100"
+            >
               <h3 className="text-lg font-semibold mb-3">Tips</h3>
               <ul className="text-sm text-slate-400 space-y-2">
                 <li>Use a clean PDF for best parsing results.</li>
@@ -157,7 +164,7 @@ export default function UploadResumePage() {
           </div>
 
           {/* Right: preview card */}
-          <div>
+          <div data-aos="fade-left">
             <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-sm min-h-[220px] flex flex-col justify-between">
               {!parsed && !isParsing ? (
                 <div className="flex flex-col items-center justify-center gap-4 py-12">
@@ -183,7 +190,7 @@ export default function UploadResumePage() {
                   <div className="h-3 bg-slate-800 rounded w-5/6 animate-pulse" />
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4" data-aos="zoom-in">
                   <div>
                     <h4 className="text-sm text-slate-400">Name</h4>
                     <div className="text-lg font-semibold text-slate-100">

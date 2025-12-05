@@ -31,7 +31,7 @@ export default function ResumeHistoryPage() {
   return (
     <div className="min-h-[60vh] p-6 text-slate-50">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
+        <div className="mb-8" data-aos="fade-up">
           <h1 className="text-3xl font-bold">Resume history</h1>
           <p className="text-slate-400 mt-2">
             Quickly reuse a parsed resume for new job analyses.
@@ -39,7 +39,10 @@ export default function ResumeHistoryPage() {
         </div>
 
         {mockResumes.length === 0 ? (
-          <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-8 text-center">
+          <div
+            className="rounded-2xl bg-slate-900/60 border border-slate-800 p-8 text-center"
+            data-aos="zoom-in"
+          >
             <p className="text-slate-300">
               You haven’t uploaded any resumes yet. Start by uploading one.
             </p>
@@ -53,10 +56,12 @@ export default function ResumeHistoryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mockResumes.map((r) => (
+            {mockResumes.map((r, idx) => (
               <div
                 key={r.id}
                 className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-sm hover:-translate-y-0.5 transition"
+                data-aos="fade-up"
+                data-aos-delay={`${idx * 100}`}
               >
                 <div className="flex items-center justify-between">
                   <div>
