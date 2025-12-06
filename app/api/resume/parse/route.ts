@@ -3,23 +3,46 @@ import { parseResume } from "@/lib/mlClient";
 import { connectDB } from "@/lib/db";
 import Resume from "@/models/Resume";
 
+// IMPORTANT: we use Node.js runtime (needed for Mongoose)
+export const runtime = "nodejs";
+// Ensure dynamic so it doesn't try to cache
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { fileUrl, linkedinUrl } = body;
+    const contentType = req.headers.get("content-type") || "";
 
-    // Validate: at least one input required
-    if (!fileUrl && !linkedinUrl) {
+    // For now we ONLY support JSON (rawText). If it's form-data, stop early.
+    if (!contentType.includes("application/json")) {
       return NextResponse.json(
-        { error: "Please provide either a file URL or LinkedIn URL." },
+        {
+          error:
+            "This endpoint currently expects JSON. Please send { rawText } as JSON (paste-mode) instead of FormData/file upload.",
+        },
         { status: 400 }
       );
     }
 
-    // Call ML service to parse resume
+    const body = await req.json();
+    const { fileUrl, linkedinUrl, rawText } = body || {};
+
+    // Validate input from frontend
+    if (!fileUrl && !linkedinUrl && (!rawText || !rawText.trim())) {
+      return NextResponse.json(
+        {
+          error: "Please upload a file or paste your resume text.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Call ML service
     let mlResult;
     try {
-      mlResult = await parseResume({ fileUrl, linkedinUrl });
+      mlResult = await parseResume({
+        rawText: rawText ?? null,
+        linkedinUrl: linkedinUrl ?? null,
+      });
     } catch (err: any) {
       console.error("[/api/resume/parse] ML service error:", err);
       return NextResponse.json(
@@ -28,15 +51,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Connect to MongoDB and save resume
+    // Guard: mlResult must have non-empty rawText before writing to DB
+    if (!mlResult?.rawText || !mlResult.rawText.trim()) {
+      console.warn(
+        "[/api/resume/parse] Empty rawText from ML. No text extracted from file or input."
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Could not extract text from resume. Please try a different file or paste your resume text.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Save to Mongo
     await connectDB();
+
+    const sourceType = fileUrl ? "upload" : linkedinUrl ? "linkedin" : "upload";
+
     const resume = new Resume({
-      userId: null, // TODO: get from session when auth is wired
-      sourceType: fileUrl ? "pdf" : "linkedin",
-      rawText: mlResult.rawText,
+      userId: null, // TODO: from session later
+      sourceType,
+      originalFileUrl: fileUrl ?? undefined,
+      linkedinUrl: linkedinUrl ?? undefined,
+      rawText: mlResult.rawText, // guaranteed non-empty
       parsed: mlResult.parsed,
-      fileUrl,
-      linkedinUrl,
       createdAt: new Date(),
     });
 
@@ -47,9 +87,9 @@ export async function POST(req: NextRequest) {
       parsed: mlResult.parsed,
     });
   } catch (err: any) {
-    console.error("[/api/resume/parse] Error:", err);
+    console.error("[/api/resume/parse] Error in route:", err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error in /api/resume/parse" },
       { status: 500 }
     );
   }

@@ -1,32 +1,50 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 type StoredResume = {
-  id: string;
-  name?: string;
+  resumeId: string;
+  parsed: {
+    name?: string;
+    title?: string;
+    skills?: string[];
+  };
   createdAt: string;
-  skills: string[];
+  sourceType?: string;
 };
 
-const mockResumes: StoredResume[] = [
-  {
-    id: "1",
-    name: "Anudeep Reddy - React Engineer",
-    createdAt: new Date().toISOString(),
-    skills: ["React", "TypeScript", "Node.js"],
-  },
-  {
-    id: "2",
-    name: "Maria Gomez - Data Scientist",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
-    skills: ["Python", "Pandas", "NLP"],
-  },
-];
-
 export default function ResumeHistoryPage() {
-  // TODO: replace mock data with fetch to GET /api/resume/history
+  const [resumes, setResumes] = useState<StoredResume[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function load() {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/resume/history");
+        if (!res.ok) throw new Error(`Failed to fetch (${res.status})`);
+        const data = await res.json();
+        if (mounted) {
+          setResumes(data?.resumes ?? []);
+        }
+      } catch (err: any) {
+        console.error("Failed to load resume history", err);
+        if (mounted) setError(err?.message ?? "Failed to load");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div className="min-h-[60vh] p-6 text-slate-50">
@@ -38,7 +56,15 @@ export default function ResumeHistoryPage() {
           </p>
         </div>
 
-        {mockResumes.length === 0 ? (
+        {loading ? (
+          <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-8 text-center">
+            <p className="text-slate-300">Loading...</p>
+          </div>
+        ) : error ? (
+          <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-8 text-center">
+            <p className="text-rose-400">{error}</p>
+          </div>
+        ) : !resumes || resumes.length === 0 ? (
           <div
             className="rounded-2xl bg-slate-900/60 border border-slate-800 p-8 text-center"
             data-aos="zoom-in"
@@ -56,9 +82,9 @@ export default function ResumeHistoryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mockResumes.map((r, idx) => (
+            {resumes.map((r, idx) => (
               <div
-                key={r.id}
+                key={r.resumeId}
                 className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-sm hover:-translate-y-0.5 transition"
                 data-aos="fade-up"
                 data-aos-delay={`${idx * 100}`}
@@ -66,7 +92,7 @@ export default function ResumeHistoryPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-slate-100">
-                      {r.name}
+                      {r.parsed?.name ?? r.parsed?.title ?? "Untitled"}
                     </h3>
                     <p className="text-sm text-slate-400">
                       {new Date(r.createdAt).toLocaleString()}
@@ -75,14 +101,19 @@ export default function ResumeHistoryPage() {
 
                   <div className="text-right">
                     <div className="text-sm font-medium text-slate-100">
-                      {r.skills.length} skills
+                      {(r.parsed?.skills ?? []).length} skills
                     </div>
-                    <div className="text-xs text-slate-400">parsed</div>
+                    <div className="text-xs text-slate-400">
+                      {r.sourceType ?? "parsed"}
+                    </div>
                   </div>
                 </div>
 
                 <div className="mt-4 flex items-center gap-3">
-                  <Link href={`/resume/upload?use=${r.id}`} className="flex-1">
+                  <Link
+                    href={`/resume/upload?use=${r.resumeId}`}
+                    className="flex-1"
+                  >
                     <Button className="w-full bg-indigo-500 hover:bg-indigo-400">
                       Use this resume
                     </Button>

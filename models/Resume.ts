@@ -8,13 +8,25 @@ export interface IParsedResume {
   title?: string;
   summary?: string;
   skills: string[];
+  experience: Array<{
+    company: string;
+    role: string;
+    startDate?: string;
+    endDate?: string;
+    technologies?: string[];
+  }>;
+  education: Array<{
+    institution: string;
+    degree: string;
+    year?: string;
+  }>;
 }
 
 /**
  * TypeScript interface for Resume document
  */
 export interface IResume extends Document {
-  userId: Types.ObjectId;
+  userId?: Types.ObjectId | null;
   sourceType: 'upload' | 'linkedin';
   originalFileUrl?: string;
   linkedinUrl?: string;
@@ -45,6 +57,34 @@ const parsedResumeSchema = new Schema<IParsedResume>(
       type: [String],
       default: [],
     },
+    experience: {
+      type: [
+        new Schema(
+          {
+            company: { type: String },
+            role: { type: String },
+            startDate: { type: String, default: undefined },
+            endDate: { type: String, default: undefined },
+            technologies: { type: [String], default: [] },
+          },
+          { _id: false }
+        ),
+      ],
+      default: [],
+    },
+    education: {
+      type: [
+        new Schema(
+          {
+            institution: { type: String },
+            degree: { type: String },
+            year: { type: String, default: undefined },
+          },
+          { _id: false }
+        ),
+      ],
+      default: [],
+    },
   },
   { _id: false }
 );
@@ -57,8 +97,9 @@ const resumeSchema = new Schema<IResume>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
       index: true,
+      default: null,
     },
     sourceType: {
       type: String,

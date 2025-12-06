@@ -1,7 +1,7 @@
 /**
  * Skill normalization + ontology utilities
- * - Keeps logic intentionally simple (Week 1) for deterministic matching
- * - Exports: SKILL_ONTOLOGY, normalizeSkill, extractKnownSkills
+ * - Keeps logic intentionally simple (Week 1–3) for deterministic matching
+ * - Exports: SKILL_ONTOLOGY, SKILL_ALIASES, normalizeSkill, extractKnownSkills
  */
 
 // Grouped ontology (canonical names). Keep duplicates across categories where appropriate.
@@ -57,7 +57,7 @@ export const SKILL_ONTOLOGY: Record<string, string[]> = {
 };
 
 // Lightweight alias map for common shorthand/variants -> canonical
-const SKILL_ALIASES: Record<string, string> = {
+export const SKILL_ALIASES: Record<string, string> = {
   ts: "TypeScript",
   typescript: "TypeScript",
   "type script": "TypeScript",
@@ -129,7 +129,7 @@ export function normalizeSkill(skill: string): string {
  * Naively extracts known skills from a free-form text blob using SKILL_ONTOLOGY + aliases.
  * - Loops ontology + aliases and performs word-boundary checks (case-insensitive)
  * - Returns canonical names (normalized)
- * - Avoids duplicates and preserves simple determinism
+ * - Avoids duplicates and returns a sorted list for determinism
  */
 export function extractKnownSkills(text: string): string[] {
   if (!text) return [];
@@ -149,19 +149,25 @@ export function extractKnownSkills(text: string): string[] {
     candidates.set(alias.toLowerCase(), canonical);
   }
 
-  // iterate candidates and test presence
-  for (const [candidate, canonical] of candidates.entries()) {
+  // iterate candidates (longer first to avoid partials like "sql" before "postgresql")
+  const sortedCandidates = Array.from(candidates.entries()).sort(
+    ([a], [b]) => b.length - a.length
+  );
+
+  for (const [candidate, canonical] of sortedCandidates) {
     const pattern = new RegExp("\\b" + escapeRegExp(candidate) + "\\b", "i");
     if (pattern.test(lowerText)) {
       found.add(normalizeSkill(canonical));
     }
   }
 
-  return Array.from(found);
+  // deterministic output
+  return Array.from(found).sort();
 }
 
 const SKILLS = {
   SKILL_ONTOLOGY,
+  SKILL_ALIASES,
   normalizeSkill,
   extractKnownSkills,
 };

@@ -38,6 +38,18 @@ export async function parseResume(body: {
       title?: string;
       summary?: string;
       skills: string[];
+      experience: Array<{
+        company: string;
+        role: string;
+        startDate?: string;
+        endDate?: string;
+        technologies?: string[];
+      }>;
+      education: Array<{
+        institution: string;
+        degree: string;
+        year?: string;
+      }>;
     };
   }>("/ml/resume/parse", body);
 }

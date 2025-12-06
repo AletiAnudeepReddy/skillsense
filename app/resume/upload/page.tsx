@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import * as pdfjsLib from "pdfjs-dist/build/pdf";
+import "pdfjs-dist/build/pdf.worker.entry";
 import Link from "next/link";
 import { ArrowUp, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,39 +13,72 @@ type ParsedResume = {
   title?: string;
   summary?: string;
   skills: string[];
+  experience?: Array<{
+    company: string;
+    role: string;
+    startDate?: string;
+    endDate?: string;
+    technologies?: string[];
+  }>;
+  education?: Array<{
+    institution: string;
+    degree: string;
+    year?: string;
+  }>;
 };
 
 export default function UploadResumePage() {
   const [file, setFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [rawText, setRawText] = useState<string>("");
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [parsed, setParsed] = useState<ParsedResume | null>(null);
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
     const f = e.target.files?.[0] ?? null;
     if (f && f.type !== "application/pdf") {
       setError("Please upload a PDF file for now.");
       setFile(null);
       setFileUrl(null);
+      setRawText("");
       return;
     }
     setFile(f);
     if (f) {
-      // For now use an object URL as a placeholder fileUrl
       const url = URL.createObjectURL(f);
       setFileUrl(url);
+      // Extract text from PDF
+      try {
+        const arrayBuffer = await f.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let text = "";
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          text += content.items.map((item: any) => item.str).join(" ") + "\n";
+        }
+        setRawText(text);
+      } catch (err) {
+        setError(
+          "Failed to extract text from PDF. Try another file or paste your resume text."
+        );
+        setRawText("");
+      }
     } else {
       setFileUrl(null);
+      setRawText("");
     }
   };
 
   const handleParse = async () => {
     setError(null);
-    if (!fileUrl && !linkedinUrl) {
-      setError("Please provide a PDF file or a LinkedIn URL.");
+
+    // Allow either pasted text or file upload
+    if (!rawText.trim() && !fileUrl) {
+      setError("Please paste your resume text or upload a file.");
       return;
     }
 
@@ -54,7 +89,10 @@ export default function UploadResumePage() {
       const res = await fetch("/api/resume/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileUrl, linkedinUrl }),
+        body: JSON.stringify({
+          rawText: rawText.trim() || null,
+          linkedinUrl: linkedinUrl || null,
+        }),
       });
 
       if (!res.ok) {
@@ -63,7 +101,6 @@ export default function UploadResumePage() {
       }
 
       const data = await res.json();
-      // Expected shape: { parsed: { name, title, summary, skills } }
       setParsed(data.parsed ?? data);
     } catch (err: any) {
       setError(err?.message || "An error occurred while parsing.");
@@ -90,51 +127,56 @@ export default function UploadResumePage() {
               className="rounded-2xl bg-slate-900/60 border-2 border-dashed border-slate-700 p-6 shadow-sm"
               data-aos="fade-right"
             >
-              <h3 className="text-lg font-semibold mb-3">Upload PDF</h3>
+              <h3 className="text-lg font-semibold mb-3">Paste your resume</h3>
               <p className="text-sm text-slate-400 mb-4">
-                We currently accept PDFs. Upload your resume to parse skills and
-                summary.
+                Copy and paste your resume text below. We'll parse it to extract
+                skills, experience, and education.
               </p>
 
-              <label className="flex items-center gap-3">
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={onFileChange}
-                  className="hidden"
-                  id="resume-file"
-                />
-                <label
-                  htmlFor="resume-file"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-slate-800 hover:bg-slate-700 cursor-pointer border border-slate-700"
-                >
-                  <ArrowUp className="w-4 h-4 text-slate-200" />
-                  <span className="text-sm text-slate-100">Choose PDF</span>
-                </label>
-                <span className="text-sm text-slate-400">{file?.name}</span>
-              </label>
-
-              <div className="mt-4">
-                <h4 className="text-sm font-medium mb-2">LinkedIn URL</h4>
-                <div className="flex gap-3">
-                  <Input
-                    placeholder="https://www.linkedin.com/in/your-profile"
-                    value={linkedinUrl}
-                    onChange={(e) => setLinkedinUrl(e.target.value)}
-                    className="bg-slate-800/60 text-slate-50 border-slate-700"
+              <div className="mb-4">
+                <h4 className="text-sm font-medium mb-2">
+                  Upload resume file (PDF, DOC, DOCX)
+                </h4>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={onFileChange}
+                    className="hidden"
+                    id="resume-file"
                   />
-                  <Button onClick={() => setLinkedinUrl("")} variant="ghost">
-                    Clear
-                  </Button>
+                  <span className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700">
+                    <ArrowUp className="w-4 h-4 text-slate-200" />
+                    <span className="text-sm text-slate-100">Choose file</span>
+                  </span>
+                  <span className="text-sm text-slate-400">
+                    {file?.name || "No file selected"}
+                  </span>
+                </label>
+                <div className="text-xs text-slate-500 mt-1">
+                  {fileUrl
+                    ? "You can now parse your resume using the uploaded file."
+                    : "Uploading is optional. You can also paste your resume text below."}
                 </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium mb-2">Resume text</h4>
+                <textarea
+                  value={rawText}
+                  onChange={(e) => setRawText(e.target.value)}
+                  placeholder="Paste plain text from your resume or LinkedIn profile here..."
+                  className="w-full min-h-[200px] rounded-md bg-slate-800/60 text-slate-50 p-3 text-sm border border-slate-700 resize-vertical focus:border-indigo-500 focus:outline-none"
+                />
               </div>
 
               <div className="mt-6 flex items-center gap-3">
                 <Button
                   onClick={handleParse}
-                  className="bg-indigo-500 hover:bg-indigo-400"
+                  disabled={isParsing}
+                  className="bg-indigo-500 hover:bg-indigo-400 disabled:opacity-50"
                 >
-                  Parse resume
+                  {isParsing ? "Parsing..." : "Parse resume"}
                 </Button>
                 <Link
                   href="/resume/history"
@@ -147,6 +189,14 @@ export default function UploadResumePage() {
               {error && (
                 <div className="mt-4 text-sm text-rose-400">{error}</div>
               )}
+
+              <div className="mt-6 p-4 bg-slate-800/30 rounded-md border border-slate-700">
+                <p className="text-xs text-slate-400">
+                  💡 <strong>Coming soon:</strong> PDF upload and LinkedIn
+                  direct import will be available in a future update. For now,
+                  please copy and paste your resume text.
+                </p>
+              </div>
             </div>
 
             <div
@@ -175,11 +225,11 @@ export default function UploadResumePage() {
                     No resume parsed yet
                   </p>
                   <p className="text-sm text-slate-400 text-center">
-                    Upload a PDF or paste a LinkedIn URL and click{" "}
+                    Paste your resume text on the left and click{" "}
                     <span className="font-semibold text-slate-100">
                       Parse resume
-                    </span>
-                    .
+                    </span>{" "}
+                    to get started.
                   </p>
                 </div>
               ) : isParsing ? (
