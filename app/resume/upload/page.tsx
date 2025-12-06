@@ -1,12 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import * as pdfjsLib from "pdfjs-dist/build/pdf";
-import "pdfjs-dist/build/pdf.worker.entry";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowUp, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
+// Import pdf.js worker
+let pdfWorker: any = null;
+
+const initializePdfWorker = async () => {
+  if (pdfWorker) return;
+  try {
+    const pdfjsLib = await import("pdfjs-dist");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    pdfWorker = pdfjsLib;
+  } catch (err) {
+    console.error("Failed to initialize PDF.js:", err);
+  }
+};
 
 type ParsedResume = {
   name?: string;
@@ -35,37 +46,110 @@ export default function UploadResumePage() {
   const [isParsing, setIsParsing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [parsed, setParsed] = useState<ParsedResume | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
+
+  // Initialize PDF worker on mount
+  useEffect(() => {
+    initializePdfWorker();
+  }, []);
+
+  /**
+   * Extract text directly from PDF file on the client-side
+   * No network transfer - prevents file corruption
+   */
+  const extractTextFromPDF = async (pdfFile: File): Promise<string> => {
+    try {
+      setIsExtracting(true);
+
+      // Validate file is not corrupted by checking file size
+      if (pdfFile.size === 0) {
+        throw new Error("File is empty or corrupted. Please try another file.");
+      }
+
+      if (pdfFile.size > 50 * 1024 * 1024) {
+        throw new Error(
+          "File is too large (>50MB). Please try a smaller file."
+        );
+      }
+
+      // Read file as array buffer
+      const arrayBuffer = await pdfFile.arrayBuffer();
+
+      // Validate buffer integrity
+      if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+        throw new Error("Failed to read file. File may be corrupted.");
+      }
+
+      // Get pdf.js library
+      const pdfjsLib = await import("pdfjs-dist");
+      const { getDocument, version } = pdfjsLib;
+
+      // Set worker source from CDN
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.js`;
+
+      // Load PDF document
+      const loadingTask = getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+
+      // Extract text from all pages
+      let fullText = "";
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(" ");
+        fullText += pageText + "\n";
+      }
+
+      const extractedText = fullText.trim();
+
+      if (!extractedText) {
+        throw new Error(
+          "Could not extract text from PDF. The PDF may be scanned or encrypted. Please try another file or paste your resume text."
+        );
+      }
+
+      return extractedText;
+    } catch (err: any) {
+      throw new Error(
+        err?.message ||
+          "Failed to extract text from PDF. File may be corrupted."
+      );
+    } finally {
+      setIsExtracting(false);
+    }
+  };
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
     const f = e.target.files?.[0] ?? null;
+
+    // Validate file type
     if (f && f.type !== "application/pdf") {
-      setError("Please upload a PDF file for now.");
+      setError("Please upload a PDF file.");
       setFile(null);
       setFileUrl(null);
       setRawText("");
       return;
     }
+
     setFile(f);
+
     if (f) {
-      const url = URL.createObjectURL(f);
-      setFileUrl(url);
-      // Extract text from PDF
       try {
-        const arrayBuffer = await f.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let text = "";
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          text += content.items.map((item: any) => item.str).join(" ") + "\n";
-        }
-        setRawText(text);
-      } catch (err) {
-        setError(
-          "Failed to extract text from PDF. Try another file or paste your resume text."
-        );
+        // Create blob URL for display
+        const url = URL.createObjectURL(f);
+        setFileUrl(url);
+
+        // Extract text directly on client-side (no network transfer)
+        const extractedText = await extractTextFromPDF(f);
+        setRawText(extractedText);
+        setError(null);
+      } catch (err: any) {
+        setError(err?.message || "Failed to process PDF file.");
         setRawText("");
+        setFileUrl(null);
       }
     } else {
       setFileUrl(null);
@@ -76,9 +160,9 @@ export default function UploadResumePage() {
   const handleParse = async () => {
     setError(null);
 
-    // Allow either pasted text or file upload
-    if (!rawText.trim() && !fileUrl) {
-      setError("Please paste your resume text or upload a file.");
+    // Only require rawText (from paste or PDF extraction)
+    if (!rawText.trim()) {
+      setError("Please paste your resume text or upload a PDF file.");
       return;
     }
 
@@ -154,9 +238,11 @@ export default function UploadResumePage() {
                   </span>
                 </label>
                 <div className="text-xs text-slate-500 mt-1">
-                  {fileUrl
-                    ? "You can now parse your resume using the uploaded file."
-                    : "Uploading is optional. You can also paste your resume text below."}
+                  {isExtracting
+                    ? "Extracting text from PDF..."
+                    : fileUrl
+                    ? "✅ PDF extracted! You can now parse your resume."
+                    : "Select a PDF file to extract text locally (no upload needed)."}
                 </div>
               </div>
 
@@ -192,9 +278,9 @@ export default function UploadResumePage() {
 
               <div className="mt-6 p-4 bg-slate-800/30 rounded-md border border-slate-700">
                 <p className="text-xs text-slate-400">
-                  💡 <strong>Coming soon:</strong> PDF upload and LinkedIn
-                  direct import will be available in a future update. For now,
-                  please copy and paste your resume text.
+                  ✅ <strong>Secure PDF Parsing!</strong> Your PDF is extracted
+                  directly on your device - no file upload needed. Your data
+                  stays private.
                 </p>
               </div>
             </div>
