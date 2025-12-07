@@ -6,13 +6,15 @@ import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 export interface IParsedJob {
   requiredSkills: string[];
   niceToHaveSkills: string[];
+  responsibilities?: string[];
+  seniorityLevel?: string;
 }
 
 /**
  * TypeScript interface for JobProfile document
  */
 export interface IJobProfile extends Document {
-  userId: Types.ObjectId;
+  userId?: Types.ObjectId | null;
   sourceType: 'paste' | 'link';
   jobTitle: string;
   company?: string;
@@ -36,6 +38,14 @@ const parsedJobSchema = new Schema<IParsedJob>(
       type: [String],
       default: [],
     },
+    responsibilities: {
+      type: [String],
+      default: [],
+    },
+    seniorityLevel: {
+      type: String,
+      default: undefined,
+    },
   },
   { _id: false }
 );
@@ -48,7 +58,8 @@ const jobProfileSchema = new Schema<IJobProfile>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
+      default: null,
       index: true,
     },
     sourceType: {

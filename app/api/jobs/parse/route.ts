@@ -6,7 +6,10 @@ import JobProfile from "@/models/JobProfile";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { jdText, jdUrl } = body;
+      let { jdText, jdUrl } = body;
+      // Normalize empty strings to null
+      jdText = jdText && String(jdText).trim() ? String(jdText) : null;
+      jdUrl = jdUrl && String(jdUrl).trim() ? String(jdUrl) : null;
 
     // Validate: at least one input required
     if (!jdText && !jdUrl) {
@@ -16,7 +19,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Call ML service to parse job
+    // Call ML service to parse job (only jdText supported server-side)
     let mlResult;
     try {
       mlResult = await parseJob({ jdText, jdUrl });
@@ -28,21 +31,41 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Connect to MongoDB and save job profile
+    // Normalize parsed shape to ensure consistent response and DB storage
+    const parsed = mlResult.parsed || {};
+    const normalized = {
+      jobTitle: parsed.jobTitle || parsed.title || "",
+      company: parsed.company || null,
+      location: parsed.location || null,
+      requiredSkills: Array.isArray(parsed.requiredSkills)
+        ? parsed.requiredSkills
+        : [],
+      niceToHaveSkills: Array.isArray(parsed.niceToHaveSkills)
+        ? parsed.niceToHaveSkills
+        : [],
+      seniorityLevel: parsed.seniorityLevel || null,
+      responsibilities: Array.isArray(parsed.responsibilities)
+        ? parsed.responsibilities
+        : [],
+    };
+
+    // Connect to MongoDB and save job profile (userId optional)
     await connectDB();
     const jobProfile = new JobProfile({
       userId: null, // TODO: get from session when auth is wired
-      rawText: mlResult.rawText,
-      parsed: mlResult.parsed,
-      sourceUrl: jdUrl,
-      createdAt: new Date(),
+      sourceType: jdText ? "paste" : "link",
+      jobTitle: normalized.jobTitle || "",
+      company: normalized.company,
+      location: normalized.location,
+      rawText: mlResult.rawText || jdText || "",
+      parsed: normalized,
     });
 
     const saved = await jobProfile.save();
 
     return NextResponse.json({
       jobProfileId: saved._id.toString(),
-      parsed: mlResult.parsed,
+      parsed: normalized,
     });
   } catch (err: any) {
     console.error("[/api/jobs/parse] Error:", err);

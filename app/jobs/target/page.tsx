@@ -11,6 +11,8 @@ type ParsedJob = {
   location?: string;
   requiredSkills: string[];
   niceToHaveSkills: string[];
+  responsibilities?: string[];
+  seniorityLevel?: string | null;
 };
 
 export default function TargetJobPage() {
@@ -34,7 +36,10 @@ export default function TargetJobPage() {
       const res = await fetch("/api/jobs/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jdText, jdUrl }),
+        body: JSON.stringify({
+          jdText: jdText.trim() || null,
+          jdUrl: jdUrl.trim() || null,
+        }),
       });
 
       if (!res.ok) {
@@ -47,10 +52,13 @@ export default function TargetJobPage() {
       const parsed = data.parsed ?? data;
       setParsedJob({
         jobTitle: parsed.jobTitle ?? parsed.title ?? "Untitled Role",
-        company: parsed.company,
-        location: parsed.location,
+        company: parsed.company ?? null,
+        location: parsed.location ?? null,
         requiredSkills: parsed.requiredSkills ?? parsed.required_skills ?? [],
         niceToHaveSkills: parsed.niceToHaveSkills ?? parsed.nice_to_have ?? [],
+        responsibilities:
+          parsed.responsibilities ?? parsed.responsibilities ?? [],
+        seniorityLevel: parsed.seniorityLevel ?? parsed.seniority_level ?? null,
       });
     } catch (err: any) {
       setError(err?.message || "An error occurred while parsing the job.");
@@ -148,7 +156,7 @@ export default function TargetJobPage() {
             </Card>
           </div>
 
-          <div data-aos="fade-left">
+          <div>
             <Card className="bg-slate-900/60 border-slate-800 p-6 min-h-[340px]">
               {!parsedJob && !isParsing ? (
                 <div className="flex flex-col items-center justify-center gap-4 py-12">
@@ -174,7 +182,7 @@ export default function TargetJobPage() {
                   <div className="h-3 bg-slate-800 rounded w-5/6 animate-pulse" />
                 </div>
               ) : (
-                <div className="space-y-4" data-aos="zoom-in">
+                <div className="space-y-4">
                   <div>
                     <h4 className="text-sm text-slate-400">Title</h4>
                     <div className="text-lg font-semibold text-slate-100">
@@ -188,6 +196,11 @@ export default function TargetJobPage() {
                     {parsedJob?.location && (
                       <div className="text-sm text-slate-400">
                         {parsedJob.location}
+                      </div>
+                    )}
+                    {parsedJob?.seniorityLevel && (
+                      <div className="text-sm text-slate-400">
+                        Seniority: {parsedJob.seniorityLevel}
                       </div>
                     )}
                   </div>
@@ -222,6 +235,17 @@ export default function TargetJobPage() {
                         </span>
                       ))}
                     </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm text-slate-400 mb-2">
+                      Responsibilities
+                    </h4>
+                    <ul className="text-sm text-slate-300 list-disc pl-5 space-y-1">
+                      {(parsedJob?.responsibilities ?? []).map((r, idx) => (
+                        <li key={`resp-${idx}`}>{r}</li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )}

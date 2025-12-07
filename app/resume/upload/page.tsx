@@ -175,7 +175,7 @@ export default function UploadResumePage() {
           </div>
 
           {/* Right: preview card */}
-          <div data-aos="fade-left">
+          <div>
             <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-sm min-h-[220px] flex flex-col justify-between">
               {!parsed && !isParsing ? (
                 <div className="flex flex-col items-center justify-center gap-4 py-12">
@@ -201,7 +201,7 @@ export default function UploadResumePage() {
                   <div className="h-3 bg-slate-800 rounded w-5/6 animate-pulse" />
                 </div>
               ) : (
-                <div className="space-y-4" data-aos="zoom-in">
+                <div className="space-y-4">
                   <div>
                     <h4 className="text-sm text-slate-400">Name</h4>
                     <div className="text-lg font-semibold text-slate-100">
