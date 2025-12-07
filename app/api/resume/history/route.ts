@@ -10,13 +10,14 @@ export async function GET(request: NextRequest) {
     const docs = await Resume.find({}).sort({ createdAt: -1 }).limit(20).lean();
 
     const payload = docs.map((d: any) => ({
-      resumeId: d._id?.toString(),
+      _id: d._id?.toString(),
       parsed: d.parsed,
       createdAt: d.createdAt,
       sourceType: d.sourceType,
     }));
 
-    return NextResponse.json({ resumes: payload });
+    // Return as `items` to match frontend expectations
+    return NextResponse.json({ items: payload });
   } catch (err: any) {
     console.error("[/api/resume/history] Error:", err);
     return NextResponse.json({ error: "Failed to fetch resume history" }, { status: 500 });

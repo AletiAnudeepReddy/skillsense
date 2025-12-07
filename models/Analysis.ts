@@ -14,7 +14,7 @@ export interface ISkillOverlap {
  * TypeScript interface for Analysis document
  */
 export interface IAnalysis extends Document {
-  userId: Types.ObjectId;
+  userId?: Types.ObjectId | null;
   resumeId: Types.ObjectId;
   jobProfileId: Types.ObjectId;
   matchScore: number;
@@ -58,7 +58,9 @@ const analysisSchema = new Schema<IAnalysis>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
+      sparse: true,
+      default: null,
     },
     resumeId: {
       type: Schema.Types.ObjectId,

@@ -105,6 +105,21 @@ export async function POST(request: NextRequest) {
     const jobRequired = jobProfileDoc.parsed?.requiredSkills || [];
     const jobNiceToHave = jobProfileDoc.parsed?.niceToHaveSkills || [];
 
+    // Validate arrays - provide helpful guidance if empty
+    if (!Array.isArray(resumeSkills) || resumeSkills.length === 0) {
+      return NextResponse.json(
+        { error: 'Resume has no extracted skills. Please upload a parsed resume.' },
+        { status: 400 }
+      );
+    }
+
+    if (!Array.isArray(jobRequired) || jobRequired.length === 0) {
+      return NextResponse.json(
+        { error: 'Job profile contains no required skills. Ensure the job was parsed correctly.' },
+        { status: 400 }
+      );
+    }
+
     // Call ML service
     let analysisResult;
     try {
@@ -139,7 +154,7 @@ export async function POST(request: NextRequest) {
 
     // Save Analysis document
     const analysisDoc = await Analysis.create({
-      userId: resumeDoc.userId,
+      userId: resumeDoc.userId ?? null,
       resumeId: new mongoose.Types.ObjectId(resumeId),
       jobProfileId: new mongoose.Types.ObjectId(jobProfileId),
       matchScore: analysisResult.matchScore,
@@ -153,19 +168,19 @@ export async function POST(request: NextRequest) {
       recommendedNextSteps,
     });
 
-    // Return response
+    // Return response (normalize IDs to strings)
     return NextResponse.json(
       {
-        analysisId: analysisDoc._id,
+        analysisId: analysisDoc._id.toString(),
         matchScore: analysisResult.matchScore,
-        skillOverlap: {
+        overlap: {
           matchedSkills: analysisResult.matchedSkills,
-          missingCoreSkills: analysisResult.missingCore,
-          missingNiceToHaveSkills: analysisResult.missingOptional,
+          missingCore: analysisResult.missingCore,
+          missingOptional: analysisResult.missingOptional,
           extraSkills: analysisResult.extraSkills,
         },
       },
-      { status: 201 }
+      { status: 200 }
     );
   } catch (error: any) {
     console.error('[/api/analysis/run] Unexpected error:', error);

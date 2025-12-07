@@ -4,11 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 type ParsedJob = {
+  jobProfileId: string;
   jobTitle: string;
-  company?: string;
-  location?: string;
+  company?: string | null;
+  location?: string | null;
   requiredSkills: string[];
   niceToHaveSkills: string[];
   responsibilities?: string[];
@@ -22,10 +24,24 @@ export default function TargetJobPage() {
   const [error, setError] = useState<string | null>(null);
   const [parsedJob, setParsedJob] = useState<ParsedJob | null>(null);
 
+  // Additional states for the analysis flow
+  const [parseError, setParseError] = useState<string | null>(null);
+  const [resumes, setResumes] = useState<Array<{ id: string; label: string }>>(
+    []
+  );
+  const [resumesLoading, setResumesLoading] = useState(false);
+  const [selectedResumeId, setSelectedResumeId] = useState<string>("");
+  const [isRunningAnalysis, setIsRunningAnalysis] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+
+  const router = useRouter();
+
   const handleParse = async () => {
     setError(null);
+    setParseError(null);
+
     if (!jdText.trim() && !jdUrl.trim()) {
-      setError("Please paste a job description or provide a job link.");
+      setParseError("Please paste a job description or provide a job link.");
       return;
     }
 
@@ -44,28 +60,108 @@ export default function TargetJobPage() {
 
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || "Failed to parse job description");
+        console.error("/api/jobs/parse error:", res.status, text);
+        setParseError(text || "Failed to parse job description");
+        return;
       }
 
       const data = await res.json();
-      // Expected: { parsed: { jobTitle, company, location, requiredSkills, niceToHaveSkills } }
       const parsed = data.parsed ?? data;
-      setParsedJob({
+
+      const normalized: ParsedJob = {
+        jobProfileId: data.jobProfileId || parsed.jobProfileId || "",
         jobTitle: parsed.jobTitle ?? parsed.title ?? "Untitled Role",
         company: parsed.company ?? null,
         location: parsed.location ?? null,
         requiredSkills: parsed.requiredSkills ?? parsed.required_skills ?? [],
         niceToHaveSkills: parsed.niceToHaveSkills ?? parsed.nice_to_have ?? [],
-        responsibilities:
-          parsed.responsibilities ?? parsed.responsibilities ?? [],
+        responsibilities: parsed.responsibilities ?? [],
         seniorityLevel: parsed.seniorityLevel ?? parsed.seniority_level ?? null,
-      });
+      };
+
+      setParsedJob(normalized);
+
+      // Load resumes after a successful parse
+      if (!resumes.length) {
+        loadResumes();
+      }
     } catch (err: any) {
-      setError(err?.message || "An error occurred while parsing the job.");
+      console.error("Error calling /api/jobs/parse", err);
+      setParseError(err?.message || "An error occurred while parsing the job.");
     } finally {
       setIsParsing(false);
     }
   };
+
+  async function loadResumes() {
+    setResumesLoading(true);
+    try {
+      const res = await fetch("/api/resume/history");
+      if (!res.ok) {
+        const txt = await res.text();
+        console.error("/api/resume/history failed:", res.status, txt);
+        setResumes([]);
+        return;
+      }
+      const data = await res.json();
+      const items = data.items || [];
+      const mapped = items.map((it: any) => {
+        const labelBase =
+          it.parsed?.name || it.parsed?.title || "Untitled resume";
+        const created = new Date(it.createdAt).toLocaleDateString();
+        return { id: it._id, label: `${labelBase} • ${created}` };
+      });
+      setResumes(mapped);
+      if (mapped.length) setSelectedResumeId(mapped[0].id);
+    } catch (err) {
+      console.error("Error loading resumes", err);
+      setResumes([]);
+    } finally {
+      setResumesLoading(false);
+    }
+  }
+
+  async function handleRunAnalysis() {
+    setAnalysisError(null);
+    if (!parsedJob || !parsedJob.jobProfileId) {
+      setAnalysisError("No parsed job available.");
+      return;
+    }
+    if (!selectedResumeId) {
+      setAnalysisError("Select a resume to run analysis.");
+      return;
+    }
+
+    setIsRunningAnalysis(true);
+    try {
+      const res = await fetch("/api/analysis/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          resumeId: selectedResumeId,
+          jobProfileId: parsedJob.jobProfileId,
+        }),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        console.error("/api/analysis/run failed:", res.status, txt);
+        setAnalysisError(txt || "Failed to run analysis");
+        return;
+      }
+      const data = await res.json();
+      const analysisId = data.analysisId || data.id;
+      if (!analysisId) {
+        setAnalysisError("Analysis service returned no id.");
+        return;
+      }
+      router.push(`/analysis/${analysisId}`);
+    } catch (err: any) {
+      console.error("Error running analysis", err);
+      setAnalysisError(err?.message || "Failed to run analysis");
+    } finally {
+      setIsRunningAnalysis(false);
+    }
+  }
 
   return (
     <div className="min-h-[70vh] p-6 text-slate-50">
@@ -119,8 +215,10 @@ export default function TargetJobPage() {
                   </div>
                 </div>
 
-                {error && (
-                  <div className="mt-4 text-sm text-rose-400">{error}</div>
+                {(parseError || error) && (
+                  <div className="mt-4 text-sm text-rose-400">
+                    {parseError || error}
+                  </div>
                 )}
 
                 <div className="mt-6 flex items-center gap-3">
@@ -246,6 +344,50 @@ export default function TargetJobPage() {
                         <li key={`resp-${idx}`}>{r}</li>
                       ))}
                     </ul>
+                  </div>
+                  <div className="pt-4">
+                    <h4 className="text-sm text-slate-400 mb-2">
+                      Compare with your resume
+                    </h4>
+                    {resumesLoading ? (
+                      <div className="text-sm text-slate-400">
+                        Loading resumes…
+                      </div>
+                    ) : resumes.length === 0 ? (
+                      <div className="text-sm text-rose-400">
+                        No resumes found. Upload one first.
+                      </div>
+                    ) : (
+                      <div className="flex gap-3 items-center">
+                        <select
+                          value={selectedResumeId}
+                          onChange={(e) => setSelectedResumeId(e.target.value)}
+                          className="bg-slate-800 text-slate-50 p-2 rounded-md border border-slate-700"
+                        >
+                          {resumes.map((r) => (
+                            <option key={r.id} value={r.id}>
+                              {r.label}
+                            </option>
+                          ))}
+                        </select>
+
+                        <Button
+                          onClick={handleRunAnalysis}
+                          disabled={
+                            !parsedJob || !selectedResumeId || isRunningAnalysis
+                          }
+                        >
+                          {isRunningAnalysis
+                            ? "Running…"
+                            : "Run Skill Analysis"}
+                        </Button>
+                      </div>
+                    )}
+                    {analysisError && (
+                      <div className="text-sm text-rose-400 mt-2">
+                        {analysisError}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

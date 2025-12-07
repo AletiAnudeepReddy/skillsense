@@ -35,9 +35,14 @@ export async function GET(
 
     return NextResponse.json(
       {
+        analysisId: analysis._id?.toString(),
         matchScore: analysis.matchScore,
         skillOverlap: analysis.skillOverlap,
         summary: analysis.summary,
+        recommendedNextSteps: analysis.recommendedNextSteps,
+        createdAt: analysis.createdAt,
+        resumeId: analysis.resumeId?.toString(),
+        jobProfileId: analysis.jobProfileId?.toString(),
       },
       { status: 200 }
     );

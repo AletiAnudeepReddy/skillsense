@@ -83,17 +83,17 @@ export default function AnalysisPage() {
   return (
     <>
       {/* Header */}
-      <div className="mb-12" data-aos="fade-down">
-        <h1 className="text-2xl sm:text-5xl font-bold text-white mb-3">
+      <div className="mb-12 p-6" data-aos="fade-down">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">
           Your Skill Match Result
         </h1>
-        <p className="text-xl text-slate-300">
+        <p className="text-lg text-slate-300">
           Based on your resume vs the selected job description.
         </p>
       </div>
 
       {/* Main Content */}
-      <div className="space-y-12">
+      <div className="space-y-12 px-6">
         {/* Match Score Hero Card */}
         <div
           className="relative group rounded-3xl overflow-hidden backdrop-blur-xl border border-slate-800 bg-slate-900/60 p-8 sm:p-12"
@@ -111,14 +111,14 @@ export default function AnalysisPage() {
           <div className="relative">
             <div className="text-center mb-8">
               <div className="mb-4">
-                <div className="text-7xl sm:text-8xl font-bold bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                <div className="text-7xl sm:text-8xl font-bold bg-gradient-to-r from-emerald-800 via-cyan-800 to-indigo-800 bg-clip-text text-transparent">
                   {matchScore}%
                 </div>
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
                 {fitStatus}
               </h2>
-              <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+              <p className="text-slate-700 text-lg max-w-2xl mx-auto">
                 {summary}
               </p>
             </div>
@@ -134,7 +134,7 @@ export default function AnalysisPage() {
         </div>
 
         {/* Skill Breakdown Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2  gap-8">
           {/* Strong Skills */}
           <div data-aos="fade-up" data-aos-delay="200">
             <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
