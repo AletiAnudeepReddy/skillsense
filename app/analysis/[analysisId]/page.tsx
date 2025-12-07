@@ -84,10 +84,10 @@ export default function AnalysisPage() {
     <>
       {/* Header */}
       <div className="mb-12 p-6" data-aos="fade-down">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+        <h1 className="text-xl sm:text-3xl font-bold text-white mb-3">
           Your Skill Match Result
         </h1>
-        <p className="text-lg text-slate-300">
+        <p className="text-md text-slate-300">
           Based on your resume vs the selected job description.
         </p>
       </div>
@@ -96,7 +96,7 @@ export default function AnalysisPage() {
       <div className="space-y-12 px-6">
         {/* Match Score Hero Card */}
         <div
-          className="relative group rounded-3xl overflow-hidden backdrop-blur-xl border border-slate-800 bg-slate-900/60 p-8 sm:p-12"
+          className="relative group rounded-3xl overflow-hidden backdrop-blur-xl border border-slate-800 bg-slate-900/60 p-8 sm:p-10"
           data-aos="fade-up"
           data-aos-delay="100"
         >
@@ -109,24 +109,24 @@ export default function AnalysisPage() {
             }}
           />
           <div className="relative">
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
               <div className="mb-4">
-                <div className="text-7xl sm:text-8xl font-bold bg-gradient-to-r from-emerald-800 via-cyan-800 to-indigo-800 bg-clip-text text-transparent">
+                <div className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-emerald-900 via-cyan-900 to-indigo-900 bg-clip-text text-transparent">
                   {matchScore}%
                 </div>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
                 {fitStatus}
               </h2>
-              <p className="text-slate-700 text-lg max-w-2xl mx-auto">
+              <p className="text-slate-700 text-md max-w-2xl mx-auto">
                 {summary}
               </p>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+            <div className="w-full bg-slate-800 shadow-xl rounded-full h-3 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 rounded-full transition-all duration-1000 ease-out"
+                className="h-full bg-gradient-to-r from-indigo-400 via-cyan-400 to-purple-400 rounded-full transition-all duration-1000 ease-out"
                 style={{ width: `${matchScore}%` }}
               />
             </div>
@@ -134,7 +134,7 @@ export default function AnalysisPage() {
         </div>
 
         {/* Skill Breakdown Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2  gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 pt-6 gap-8">
           {/* Strong Skills */}
           <div data-aos="fade-up" data-aos-delay="200">
             <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
