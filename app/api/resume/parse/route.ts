@@ -24,24 +24,23 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { fileUrl, linkedinUrl, rawText } = body || {};
+    const { rawText } = body || {};
 
-    // Validate input from frontend
-    if (!fileUrl && !linkedinUrl && (!rawText || !rawText.trim())) {
+    // Validate input from frontend - only rawText required
+    if (!rawText || !rawText.trim()) {
       return NextResponse.json(
         {
-          error: "Please upload a file or paste your resume text.",
+          error: "Please paste your resume text.",
         },
         { status: 400 }
       );
     }
 
-    // Call ML service
+    // Call ML service with rawText
     let mlResult;
     try {
       mlResult = await parseResume({
-        rawText: rawText ?? null,
-        linkedinUrl: linkedinUrl ?? null,
+        rawText: rawText.trim(),
       });
     } catch (err: any) {
       console.error("[/api/resume/parse] ML service error:", err);
@@ -65,17 +64,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Save to Mongo
+    // Save to MongoDB
     await connectDB();
-
-    const sourceType = fileUrl ? "upload" : linkedinUrl ? "linkedin" : "upload";
 
     const resume = new Resume({
       userId: null, // TODO: from session later
-      sourceType,
-      originalFileUrl: fileUrl ?? undefined,
-      linkedinUrl: linkedinUrl ?? undefined,
-      rawText: mlResult.rawText, // guaranteed non-empty
+      sourceType: "upload", // sourceType enum only allows 'upload' or 'linkedin'
+      rawText: mlResult.rawText,
       parsed: mlResult.parsed,
       createdAt: new Date(),
     });
