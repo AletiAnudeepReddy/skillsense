@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { parseJob } from "@/lib/mlClient";
 import { connectDB } from "@/lib/db";
 import JobProfile from "@/models/JobProfile";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(req: NextRequest) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    const userId = (session?.user as any)?.id;
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Not authenticated. Please log in." },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
       let { jdText, jdUrl } = body;
       // Normalize empty strings to null
@@ -49,10 +62,10 @@ export async function POST(req: NextRequest) {
         : [],
     };
 
-    // Connect to MongoDB and save job profile (userId optional)
+    // Connect to MongoDB and save job profile
     await connectDB();
     const jobProfile = new JobProfile({
-      userId: null, // TODO: get from session when auth is wired
+      userId,
       sourceType: jdText ? "paste" : "link",
       jobTitle: normalized.jobTitle || "",
       company: normalized.company,

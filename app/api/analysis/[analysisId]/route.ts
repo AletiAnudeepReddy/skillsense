@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import { connectDB } from '@/lib/db';
 import { Analysis } from '@/models/Analysis';
 import { Types } from 'mongoose';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 /**
  * GET /api/analysis/[analysisId]
@@ -12,6 +14,17 @@ export async function GET(
   { params }: { params: { analysisId: string } }
 ) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    const userId = (session?.user as any)?.id;
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Not authenticated. Please log in.' },
+        { status: 401 }
+      );
+    }
+
     const { analysisId } = params;
 
     // Validate ObjectId format
@@ -30,6 +43,14 @@ export async function GET(
       return NextResponse.json(
         { error: 'Analysis not found' },
         { status: 404 }
+      );
+    }
+
+    // Verify ownership
+    if (analysis.userId?.toString() !== userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 403 }
       );
     }
 

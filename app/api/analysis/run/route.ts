@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import mongoose from 'mongoose';
 import { connectDB } from '@/lib/db';
 import { postToML } from '@/lib/mlClient';
 import { Resume } from '@/models/Resume';
 import { JobProfile } from '@/models/JobProfile';
 import { Analysis } from '@/models/Analysis';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 /**
  * Helper: Generate a summary based on match score and skill overlap
@@ -54,6 +56,17 @@ function generateRecommendations(missingCore: string[]): string[] {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    const userId = (session?.user as any)?.id;
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Not authenticated. Please log in.' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { resumeId, jobProfileId } = body;
 
@@ -154,7 +167,7 @@ export async function POST(request: NextRequest) {
 
     // Save Analysis document
     const analysisDoc = await Analysis.create({
-      userId: resumeDoc.userId ?? null,
+      userId,
       resumeId: new mongoose.Types.ObjectId(resumeId),
       jobProfileId: new mongoose.Types.ObjectId(jobProfileId),
       matchScore: analysisResult.matchScore,

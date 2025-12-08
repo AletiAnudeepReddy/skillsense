@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import { connectDB } from '@/lib/db';
 import { Analysis } from '@/models/Analysis';
 import { LearningPlan } from '@/models/LearningPlan';
 import { postToML } from '@/lib/mlClient';
 import { Types } from 'mongoose';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 /**
  * POST /api/analysis/learning-plan
@@ -11,6 +13,17 @@ import { Types } from 'mongoose';
  */
 export async function POST(request: Request) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    const userId = (session?.user as any)?.id;
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Not authenticated. Please log in.' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { analysisId } = body;
 
@@ -63,7 +76,7 @@ export async function POST(request: Request) {
 
     // Create learning plan document in MongoDB
     const learningPlan = new LearningPlan({
-      userId: analysis.userId ?? null,
+      userId,
       analysisId: analysis._id,
       plan: (mlResponse as any).plan,
       estimatedTimelineWeeks: (mlResponse as any).estimatedTimelineWeeks,

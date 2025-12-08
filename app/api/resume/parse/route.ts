@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { parseResume } from "@/lib/mlClient";
 import { connectDB } from "@/lib/db";
 import Resume from "@/models/Resume";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // IMPORTANT: we use Node.js runtime (needed for Mongoose)
 export const runtime = "nodejs";
@@ -10,6 +12,17 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    const userId = (session?.user as any)?.id;
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Not authenticated. Please log in." },
+        { status: 401 }
+      );
+    }
+
     const contentType = req.headers.get("content-type") || "";
 
     // For now we ONLY support JSON (rawText). If it's form-data, stop early.
@@ -68,8 +81,8 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const resume = new Resume({
-      userId: null, // TODO: from session later
-      sourceType: "upload", // sourceType enum only allows 'upload' or 'linkedin'
+      userId,
+      sourceType: "upload",
       rawText: mlResult.rawText,
       parsed: mlResult.parsed,
       createdAt: new Date(),

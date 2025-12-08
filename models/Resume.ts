@@ -26,7 +26,7 @@ export interface IParsedResume {
  * TypeScript interface for Resume document
  */
 export interface IResume extends Document {
-  userId?: Types.ObjectId | null;
+  userId: Types.ObjectId;
   sourceType: 'upload' | 'linkedin';
   originalFileUrl?: string;
   linkedinUrl?: string;
@@ -97,9 +97,8 @@ const resumeSchema = new Schema<IResume>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: false,
+      required: true,
       index: true,
-      default: null,
     },
     sourceType: {
       type: String,

@@ -1,13 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { connectDB } from "@/lib/db";
 import Resume from "@/models/Resume";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(request: NextRequest) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    const userId = (session?.user as any)?.id;
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Not authenticated. Please log in." },
+        { status: 401 }
+      );
+    }
+
     await connectDB();
 
-    // Return latest 20 resumes (no auth yet)
-    const docs = await Resume.find({}).sort({ createdAt: -1 }).limit(20).lean();
+    // Return latest 20 resumes for current user
+    const docs = await Resume.find({ userId }).sort({ createdAt: -1 }).limit(20).lean();
 
     const payload = docs.map((d: any) => ({
       _id: d._id?.toString(),

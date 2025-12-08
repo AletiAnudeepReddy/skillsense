@@ -183,7 +183,7 @@ export default function LearningPlanPage() {
               <span className="w-1.5 h-8 bg-gradient-to-b from-rose-400 to-red-500 rounded" />
               Core Skills (High Priority)
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-8">
               {highPrioritySkills.map((skillPlan, idx) => (
                 <SkillCard
                   key={skillPlan.skill}

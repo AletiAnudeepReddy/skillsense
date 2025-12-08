@@ -24,7 +24,7 @@ export interface ISkillPlan {
  * TypeScript interface for LearningPlan document
  */
 export interface ILearningPlan extends Document {
-  userId?: Types.ObjectId | null;
+  userId: Types.ObjectId;
   analysisId: Types.ObjectId;
   plan: ISkillPlan[];
   estimatedTimelineWeeks: number;
@@ -92,9 +92,7 @@ const learningPlanSchema = new Schema<ILearningPlan>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: false,
-      sparse: true,
-      default: null,
+      required: true,
     },
     analysisId: {
       type: Schema.Types.ObjectId,

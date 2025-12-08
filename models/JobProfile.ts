@@ -14,7 +14,7 @@ export interface IParsedJob {
  * TypeScript interface for JobProfile document
  */
 export interface IJobProfile extends Document {
-  userId?: Types.ObjectId | null;
+  userId: Types.ObjectId;
   sourceType: 'paste' | 'link';
   jobTitle: string;
   company?: string;
@@ -58,8 +58,7 @@ const jobProfileSchema = new Schema<IJobProfile>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: false,
-      default: null,
+      required: true,
       index: true,
     },
     sourceType: {
