@@ -1,5 +1,11 @@
 import MainLayout from "@/components/layout/MainLayout";
 import { TrendingUp, Zap, FileCheck } from "lucide-react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { connectDB } from "@/lib/db";
+import Resume from "@/models/Resume";
+import Analysis from "@/models/Analysis";
+import { redirect } from "next/navigation";
 
 interface StatCard {
   title: string;
@@ -17,53 +23,79 @@ interface RecentAnalysis {
   date: string;
 }
 
-export default function DashboardPage() {
-  // Mock data
+export default async function DashboardPage() {
+  // Server-side: get session and fetch user-specific data
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const userId = (session.user as any).id as string;
+
+  await connectDB();
+
+  // Total analyses
+  const totalAnalyses = await Analysis.countDocuments({ userId });
+
+  // Average match score
+  const analysesForAvg = await Analysis.find(
+    { userId },
+    { matchScore: 1 }
+  ).lean();
+  const avgMatch = analysesForAvg.length
+    ? Math.round(
+        analysesForAvg.reduce((sum, a: any) => sum + (a.matchScore || 0), 0) /
+          analysesForAvg.length
+      )
+    : 0;
+
+  // Resumes count
+  const resumesCount = await Resume.countDocuments({ userId });
+
+  // Recent analyses (last 3)
+  const recentRaw = await Analysis.find({ userId })
+    .sort({ createdAt: -1 })
+    .limit(3)
+    .populate("jobProfileId")
+    .lean();
+
+  const recentAnalyses: RecentAnalysis[] = recentRaw.map((r: any) => {
+    const job = r.jobProfileId || {};
+    const date = r.createdAt
+      ? new Date(r.createdAt).toLocaleDateString("en-IN", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "";
+
+    return {
+      id: r._id.toString(),
+      jobTitle: job.jobTitle || (r.jobTitle as string) || "Untitled",
+      company: job.company || r.company || "—",
+      matchScore: typeof r.matchScore === "number" ? r.matchScore : 0,
+      date,
+    };
+  });
+
   const statCards: StatCard[] = [
     {
       title: "Total Analyses",
-      value: 12,
+      value: totalAnalyses,
       subtitle: "analyses performed",
       icon: <Zap className="w-6 h-6 text-blue-600" />,
-      trend: "+3 this month",
     },
     {
       title: "Average Match Score",
-      value: "78%",
+      value: `${avgMatch}%`,
       subtitle: "across all jobs",
       icon: <TrendingUp className="w-6 h-6 text-green-600" />,
-      trend: "up from 72%",
     },
     {
       title: "Resumes Uploaded",
-      value: 3,
+      value: resumesCount,
       subtitle: "active resumes",
       icon: <FileCheck className="w-6 h-6 text-purple-600" />,
-      trend: "1 new this week",
-    },
-  ];
-
-  const recentAnalyses: RecentAnalysis[] = [
-    {
-      id: "1",
-      jobTitle: "Senior Full Stack Engineer",
-      company: "TechCorp Inc.",
-      matchScore: 85,
-      date: "Dec 2, 2025",
-    },
-    {
-      id: "2",
-      jobTitle: "Product Manager",
-      company: "Startup Labs",
-      matchScore: 72,
-      date: "Nov 28, 2025",
-    },
-    {
-      id: "3",
-      jobTitle: "Frontend Developer",
-      company: "Design Studio",
-      matchScore: 92,
-      date: "Nov 25, 2025",
     },
   ];
 
