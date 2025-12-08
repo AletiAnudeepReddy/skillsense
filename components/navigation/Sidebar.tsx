@@ -11,6 +11,7 @@ import {
   Menu,
   X,
   ChevronDown,
+  Brain,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -32,6 +33,7 @@ const navigationItems: Array<any> = [
     children: [{ label: "Target Job", href: "/jobs/target" }],
   },
   { label: "Analysis", href: "/analysis", icon: Activity },
+  { label: "Interview Prep", href: "/interview", icon: Brain },
   {
     label: "Learning Plan",
     href: "/learning-plan",
@@ -45,7 +47,12 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [openParents, setOpenParents] = useState<Record<string, boolean>>({});
 
-  const isActive = (href: string) => pathname === href;
+  const isActive = (href: string) => {
+    if (href === "/interview") {
+      return pathname === href || pathname.startsWith("/interview/");
+    }
+    return pathname === href;
+  };
 
   return (
     <>

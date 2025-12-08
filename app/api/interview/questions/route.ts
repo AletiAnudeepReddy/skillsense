@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Analysis from '@/models/Analysis';
 import { getQuestionsForRole } from '@/lib/interviewBank';
-import type { InterviewQuestion } from '@/lib/interviewBank';
 
 /**
  * Simple heuristic to infer role tag from job title

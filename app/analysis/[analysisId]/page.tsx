@@ -217,40 +217,76 @@ export default function AnalysisPage() {
           </div>
         )}
 
-        {/* CTA Section */}
-        <div
-          className="relative group rounded-3xl overflow-hidden backdrop-blur-xl p-8 sm:p-12 text-center"
-          data-aos="fade-up"
-          data-aos-delay="500"
-        >
-          {/* Gradient border */}
+        {/* CTA Grid - Learning Plan & Interview Prep */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-6">
+          {/* Interview Prep CTA */}
           <div
-            className="absolute inset-0 rounded-3xl p-[2px] bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-500 opacity-60 group-hover:opacity-100 transition-opacity -z-10"
-            style={{
-              backgroundImage:
-                "linear-gradient(to right, rgb(52, 211, 153), rgb(34, 211, 238), rgb(99, 102, 241))",
-            }}
-          />
-          <div className="relative bg-slate-900/80 rounded-3xl p-8 sm:p-12">
-            <h3 className="text-3xl font-bold text-white mb-3">
-              Turn This Into a Learning Plan
-            </h3>
-            <p className="text-slate-300 mb-8">
-              Get a personalized roadmap to master the skills you need for this
-              role.
-            </p>
-            <Link
-              href={`/learning-plan?analysisId=${analysisId}`}
-              className="inline-block px-8 py-4 bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-500 text-slate-950 font-bold rounded-xl hover:scale-105 hover:shadow-[0_0_40px_rgba(52,211,153,0.6)] transition-all duration-300"
-            >
-              Generate Learning Plan →
-            </Link>
+            className="relative group rounded-3xl overflow-hidden backdrop-blur-xl p-8 sm:p-12 text-center"
+            data-aos="fade-up"
+            data-aos-delay="450"
+          >
+            {/* Gradient border */}
+            <div
+              className="absolute inset-0 rounded-3xl p-[2px] bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 opacity-60 group-hover:opacity-100 transition-opacity -z-10"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, rgb(102, 51, 153), rgb(168, 85, 247), rgb(34, 211, 238))",
+              }}
+            />
+            <div className="relative bg-slate-900/80 rounded-3xl p-8 sm:p-12">
+              <h3 className="text-3xl font-bold text-white mb-3">
+                Practice Interview Questions
+              </h3>
+              <p className="text-slate-300 mb-8">
+                Get role-specific interview questions tailored to this job and
+                your skill gaps.
+              </p>
+              <Link
+                href={`/interview/${analysisId}`}
+                className="inline-block px-8 py-4 bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 text-slate-950 font-bold rounded-xl hover:scale-105 hover:shadow-[0_0_40px_rgba(102,51,153,0.6)] transition-all duration-300"
+              >
+                Start Interview Prep →
+              </Link>
+            </div>
+          </div>
+
+          {/* Learning Plan CTA */}
+          <div
+            className="relative group rounded-3xl overflow-hidden backdrop-blur-xl p-8 sm:p-12 text-center"
+            data-aos="fade-up"
+            data-aos-delay="500"
+          >
+            {/* Gradient border */}
+            <div
+              className="absolute inset-0 rounded-3xl p-[2px] bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-500 opacity-60 group-hover:opacity-100 transition-opacity -z-10"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, rgb(52, 211, 153), rgb(34, 211, 238), rgb(99, 102, 241))",
+              }}
+            />
+            <div className="relative bg-slate-900/80 rounded-3xl p-8 sm:p-12">
+              <h3 className="text-3xl font-bold text-white mb-3">
+                Turn This Into a Learning Plan
+              </h3>
+              <p className="text-slate-300 mb-8">
+                Get a personalized roadmap to master the skills you need for
+                this role.
+              </p>
+              <Link
+                href={`/learning-plan?analysisId=${analysisId}`}
+                className="inline-block px-8 py-4 bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-500 text-slate-950 font-bold rounded-xl hover:scale-105 hover:shadow-[0_0_40px_rgba(52,211,153,0.6)] transition-all duration-300"
+              >
+                Generate Learning Plan →
+              </Link>
+            </div>
           </div>
         </div>
 
+        {/* CTA Section */}
+
         {/* Footer Link */}
         <div
-          className="text-center pb-12"
+          className="text-center pb-20"
           data-aos="fade-up"
           data-aos-delay="600"
         >

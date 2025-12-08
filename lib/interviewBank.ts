@@ -662,5 +662,3 @@ export function getQuestionsForRole(params: {
   // Return up to limit
   return shuffled.slice(0, Math.min(limit, shuffled.length));
 }
-
-export { INTERVIEW_QUESTIONS, getQuestionsForRole };

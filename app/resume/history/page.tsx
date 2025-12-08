@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 type StoredResume = {
-  resumeId: string;
+  _id: string;
   parsed: {
     name?: string;
     title?: string;
@@ -30,7 +30,7 @@ export default function ResumeHistoryPage() {
         if (!res.ok) throw new Error(`Failed to fetch (${res.status})`);
         const data = await res.json();
         if (mounted) {
-          setResumes(data?.resumes ?? []);
+          setResumes(data?.items ?? []);
         }
       } catch (err: any) {
         console.error("Failed to load resume history", err);
@@ -84,7 +84,7 @@ export default function ResumeHistoryPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {resumes.map((r, idx) => (
               <div
-                key={r.resumeId}
+                key={r._id}
                 className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 shadow-sm hover:-translate-y-0.5 transition"
                 data-aos="fade-up"
                 data-aos-delay={`${idx * 100}`}
@@ -110,10 +110,7 @@ export default function ResumeHistoryPage() {
                 </div>
 
                 <div className="mt-4 flex items-center gap-3">
-                  <Link
-                    href={`/resume/upload?use=${r.resumeId}`}
-                    className="flex-1"
-                  >
+                  <Link href={`/resume/upload?use=${r._id}`} className="flex-1">
                     <Button className="w-full bg-indigo-500 hover:bg-indigo-400">
                       Use this resume
                     </Button>
