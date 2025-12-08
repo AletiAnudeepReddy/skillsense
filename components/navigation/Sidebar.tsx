@@ -36,7 +36,6 @@ const navigationItems: Array<any> = [
     label: "Learning Plan",
     href: "/learning-plan",
     icon: Activity,
-    disabled: true,
   },
   { label: "Settings", href: "/settings", icon: Settings },
 ];

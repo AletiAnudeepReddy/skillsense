@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
     // Create learning plan document in MongoDB
     const learningPlan = new LearningPlan({
-      userId: analysis.userId,
+      userId: analysis.userId ?? null,
       analysisId: analysis._id,
       plan: (mlResponse as any).plan,
       estimatedTimelineWeeks: (mlResponse as any).estimatedTimelineWeeks,
@@ -73,7 +73,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        planId: learningPlan._id.toString(),
+        learningPlanId: learningPlan._id.toString(),
+        analysisId: analysisId,
         estimatedTimelineWeeks: learningPlan.estimatedTimelineWeeks,
         plan: learningPlan.plan,
       },
