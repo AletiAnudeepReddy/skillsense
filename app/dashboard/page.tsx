@@ -5,7 +5,9 @@ import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Resume from "@/models/Resume";
 import Analysis from "@/models/Analysis";
+import JobProfile from "@/models/JobProfile";
 import { redirect } from "next/navigation";
+import { Types } from "mongoose";
 
 interface StatCard {
   title: string;
@@ -34,26 +36,28 @@ export default async function DashboardPage() {
 
   await connectDB();
 
+  const userObjectId = new Types.ObjectId(userId);
+
   // Total analyses
-  const totalAnalyses = await Analysis.countDocuments({ userId });
+  const totalAnalyses = await Analysis.countDocuments({ userId: userObjectId });
 
   // Average match score
   const analysesForAvg = await Analysis.find(
-    { userId },
-    { matchScore: 1 }
+    { userId: userObjectId },
+    { matchScore: 1 },
   ).lean();
   const avgMatch = analysesForAvg.length
     ? Math.round(
         analysesForAvg.reduce((sum, a: any) => sum + (a.matchScore || 0), 0) /
-          analysesForAvg.length
+          analysesForAvg.length,
       )
     : 0;
 
   // Resumes count
-  const resumesCount = await Resume.countDocuments({ userId });
+  const resumesCount = await Resume.countDocuments({ userId: userObjectId });
 
   // Recent analyses (last 3)
-  const recentRaw = await Analysis.find({ userId })
+  const recentRaw = await Analysis.find({ userId: userObjectId })
     .sort({ createdAt: -1 })
     .limit(3)
     .populate("jobProfileId")
@@ -175,8 +179,8 @@ export default async function DashboardPage() {
                             analysis.matchScore >= 80
                               ? "bg-gradient-to-r from-green-500 to-emerald-500"
                               : analysis.matchScore >= 60
-                              ? "bg-gradient-to-r from-yellow-500 to-amber-500"
-                              : "bg-gradient-to-r from-red-500 to-rose-500"
+                                ? "bg-gradient-to-r from-yellow-500 to-amber-500"
+                                : "bg-gradient-to-r from-red-500 to-rose-500"
                           }`}
                           style={{ width: `${analysis.matchScore}%` }}
                         />

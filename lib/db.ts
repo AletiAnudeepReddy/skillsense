@@ -1,5 +1,12 @@
 import mongoose from 'mongoose';
 
+// Load all models to ensure schemas are registered
+import '@/models/User';
+import '@/models/Resume';
+import '@/models/JobProfile';
+import '@/models/Analysis';
+import '@/models/LearningPlan';
+
 if (!process.env.MONGODB_URI) {
   throw new Error('MONGODB_URI environment variable is not defined');
 }
@@ -45,7 +52,17 @@ export async function connectDB(): Promise<typeof mongoose> {
 
     cached.promise = mongoose
       .connect(MONGODB_URI, opts)
-      .then((mongooseInstance) => {
+      .then(async (mongooseInstance) => {
+        // Load all models to ensure schemas are registered
+        try {
+          await import('@/models/User');
+          await import('@/models/Resume');
+          await import('@/models/JobProfile');
+          await import('@/models/Analysis');
+          await import('@/models/LearningPlan');
+        } catch (err) {
+          console.error('Error loading models:', err);
+        }
         console.log('✅ MongoDB connected successfully');
         return mongooseInstance;
       })
